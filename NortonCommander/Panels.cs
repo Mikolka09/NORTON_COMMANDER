@@ -10,8 +10,8 @@ namespace NortonCommander
 {
     class Panels
     {
-        string path = ".";
-        public List<string[]> DirDiscStart(DirectoryInfo dir)
+        string path = "";
+        public List<string[]> ConvertDirToList(DirectoryInfo dir)
         {
             DirectoryInfo[] dirs = dir.GetDirectories();
             FileInfo[] files = dir.GetFiles();
@@ -28,7 +28,7 @@ namespace NortonCommander
                     strD = new string[4];
                     strD[i++] = $"{item.Name}".PadRight(12);
                     strD[i++] = ">SUB-DIR<";
-                    strD[i++] = $"{item.CreationTimeUtc.Date.ToString("dd-MM-yy")}";
+                    strD[i++] = $"{item.CreationTimeUtc.Date:dd-MM-yy}";
                     strD[i++] = $"{item.CreationTimeUtc.ToShortTimeString()}".PadLeft(6);
                     list.Add(strD);
                 }
@@ -37,7 +37,7 @@ namespace NortonCommander
                     strD = new string[4];
                     strD[i++] = item.Name.Substring(0, 12);
                     strD[i++] = ">SUB-DIR<";
-                    strD[i++] = $"{item.CreationTimeUtc.Date.ToString("dd-MM-yy")}";
+                    strD[i++] = $"{item.CreationTimeUtc.Date:dd-MM-yy}";
                     strD[i++] = $"{item.CreationTimeUtc.ToShortTimeString()}".PadLeft(6);
                     list.Add(strD);
                 }
@@ -53,7 +53,7 @@ namespace NortonCommander
                     strF[i++] = $"{item.Name}".Replace(item.Extension, "").PadRight(8) +
                         " " + $"{item.Extension}".Replace(".", "").PadLeft(3);
                     strF[i++] = $"{item.Length}".Length <= 9 ? $"{item.Length}".PadLeft(9) : $"{item.Length}".Substring(0, 9);
-                    strF[i++] = $"{item.CreationTimeUtc.Date.ToString("dd-MM-yy")}";
+                    strF[i++] = $"{item.CreationTimeUtc.Date:dd-MM-yy}";
                     strF[i++] = $"{item.CreationTimeUtc.ToShortTimeString()}".PadLeft(6);
                     list.Add(strF);
                 }
@@ -63,12 +63,11 @@ namespace NortonCommander
                     strF[i++] = item.Name.Substring(0, 8).PadRight(8) + " " + $"{item.Extension}".
                         Replace(".", "").PadLeft(3);
                     strF[i++] = $"{item.Length}".Length <= 9 ? $"{item.Length}".PadLeft(9) : $"{item.Length}".Substring(0, 9);
-                    strF[i++] = $"{item.CreationTimeUtc.Date.ToString("dd-MM-yy")}";
+                    strF[i++] = $"{item.CreationTimeUtc.Date:dd-MM-yy}";
                     strF[i++] = $"{item.CreationTimeUtc.ToShortTimeString()}".PadLeft(6);
                     list.Add(strF);
                 }
             }
-
             return list;
         }
     }
