@@ -12,9 +12,8 @@ namespace NortonCommander
 
         int sizeWindow = 38;
         int y = 22;
-        int cp = 20;
 
-        public void DrawPanelLeft(List<string[]> list, string adress)
+        public void DrawPanelLeft(List<string[]> list, string adress, string panel)
         {
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.ForegroundColor = ConsoleColor.White;
@@ -141,10 +140,10 @@ namespace NortonCommander
                 }
                 k++;
             }
-            PrintDF(list, "right");
+            PrintDF(list, "left");
         }
 
-        public void DrawPanelRight(List<string[]> list, string adress)
+        public void DrawPanelRight(List<string[]> list, string adress, string panel)
         {
             int x = sizeWindow + 2;
             string text = adress;
@@ -313,11 +312,11 @@ namespace NortonCommander
                 }
                 k++;
             }
-            
+
             CommandButtons();
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.ForegroundColor = ConsoleColor.White;
-            PrintDF(list, "left");
+            PrintDF(list, "right");
         }
 
         public void CommandButtons()
@@ -446,23 +445,31 @@ namespace NortonCommander
             int x = 0;
             int y = 2;
             int len = 17;
-            if (panel == "right")
+            if (panel == "left")
             {
+
                 if (list.Count < len)
                 {
                     int i = 0;
-                    Console.SetCursorPosition(x, y);
-                    foreach (var item in list)
+                    if (list.Count == 1 && list[0].Length == 1)
                     {
                         Console.SetCursorPosition(x + 1, y + i);
-                        Console.WriteLine(item[0]);
-                        Console.SetCursorPosition(x + 14, y + i);
-                        Console.WriteLine(item[1]);
-                        Console.SetCursorPosition(x + 24, y + i);
-                        Console.WriteLine(item[2]);
-                        Console.SetCursorPosition(x + 33, y + i);
-                        Console.WriteLine(item[3]);
-                        i++;
+                        Console.WriteLine(list[0][0]);
+                    }
+                    else
+                    {
+                        foreach (var item in list)
+                        {
+                            Console.SetCursorPosition(x + 1, y + i);
+                            Console.WriteLine(item[0]);
+                            Console.SetCursorPosition(x + 14, y + i);
+                            Console.WriteLine(item[1]);
+                            Console.SetCursorPosition(x + 24, y + i);
+                            Console.WriteLine(item[2]);
+                            Console.SetCursorPosition(x + 33, y + i);
+                            Console.WriteLine(item[3]);
+                            i++;
+                        }
                     }
                     for (int j = list.Count; j < len; j++)
                     {
@@ -476,10 +483,14 @@ namespace NortonCommander
                         Console.WriteLine(" ".PadLeft(6));
                     }
                 }
-                else
+                else if (list.Count >= len)
                 {
                     int i = 0;
-                    Console.SetCursorPosition(x, y);
+                    if (list.Count == 1 && list[0].Length == 1)
+                    {
+                        Console.SetCursorPosition(x + 1, y + i);
+                        Console.WriteLine(list[0][0]);
+                    }
                     foreach (var item in list)
                     {
                         Console.SetCursorPosition(x + 1, y + i);
@@ -491,27 +502,36 @@ namespace NortonCommander
                         Console.SetCursorPosition(x + 33, y + i);
                         Console.WriteLine(item[3]);
                         i++;
+                        if (i > 16)
+                            break;
                     }
                 }
             }
-            if (panel == "left")
+            if (panel == "right")
             {
-                x=sizeWindow+2;
+                x = sizeWindow + 2;
                 if (list.Count < len)
                 {
                     int i = 0;
-                    Console.SetCursorPosition(x, y);
-                    foreach (var item in list)
+                    if (list.Count == 1 && list[0].Length == 1)
                     {
                         Console.SetCursorPosition(x + 1, y + i);
-                        Console.WriteLine(item[0]);
-                        Console.SetCursorPosition(x + 14, y + i);
-                        Console.WriteLine(item[1]);
-                        Console.SetCursorPosition(x + 24, y + i);
-                        Console.WriteLine(item[2]);
-                        Console.SetCursorPosition(x + 33, y + i);
-                        Console.WriteLine(item[3]);
-                        i++;
+                        Console.WriteLine(list[0][0]);
+                    }
+                    else
+                    {
+                        foreach (var item in list)
+                        {
+                            Console.SetCursorPosition(x + 1, y + i);
+                            Console.WriteLine(item[0]);
+                            Console.SetCursorPosition(x + 14, y + i);
+                            Console.WriteLine(item[1]);
+                            Console.SetCursorPosition(x + 24, y + i);
+                            Console.WriteLine(item[2]);
+                            Console.SetCursorPosition(x + 33, y + i);
+                            Console.WriteLine(item[3]);
+                            i++;
+                        }
                     }
                     for (int j = list.Count; j < len; j++)
                     {
@@ -525,10 +545,14 @@ namespace NortonCommander
                         Console.WriteLine(" ".PadLeft(6));
                     }
                 }
-                else
+                else if (list.Count >= len)
                 {
                     int i = 0;
-                    Console.SetCursorPosition(x, y);
+                    if (list.Count == 1 && list[0].Length == 1)
+                    {
+                        Console.SetCursorPosition(x + 1, y + i);
+                        Console.WriteLine(list[0][0]);
+                    }
                     foreach (var item in list)
                     {
                         Console.SetCursorPosition(x + 1, y + i);
@@ -540,6 +564,8 @@ namespace NortonCommander
                         Console.SetCursorPosition(x + 33, y + i);
                         Console.WriteLine(item[3]);
                         i++;
+                        if (i > 16)
+                            break;
                     }
                 }
             }

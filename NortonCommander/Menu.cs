@@ -10,11 +10,10 @@ namespace NortonCommander
 {
     class Menu
     {
-        
-        public static int VerticalMenu(List<string[]> list, DirectoryInfo dir, string panel)
+
+        public static int VerticalMenu(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
         {
-            DrawCommander draw = new DrawCommander();
-            Start start = new Start();
+            Performance perf = new Performance();
             int maxLen = 12;
             int j = 0;
             string[] str = new string[list.Count];
@@ -33,57 +32,73 @@ namespace NortonCommander
             int pos = 0;
             while (true)
             {
-
-                for (int i = 0; i < str.Length; i++)
+                if (str.Length < 17)
                 {
-                    Console.SetCursorPosition(x, y + i);
-                    if (i == pos)
+                    for (int i = 0; i < str.Length; i++)
                     {
-                        Console.BackgroundColor = fg;
-                        Console.ForegroundColor = bg;
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = bg;
-                        Console.ForegroundColor = fg;
-                    }
-                    Console.Write(str[i].PadRight(maxLen));
-                }
-                if (panel == "left")
-                {
-                    Console.SetCursorPosition(x, y + 18);
-                    Console.Write(FullNamePos(str, dir, pos));
-                    for (int i = FullNamePos(str, dir, pos).Length; i < 38; i++)
-                    {
-                        Console.Write(" ");
+                        Console.SetCursorPosition(x, y + i);
+                        if (i == pos)
+                        {
+                            Console.BackgroundColor = fg;
+                            Console.ForegroundColor = bg;
+                        }
+                        else
+                        {
+                            Console.BackgroundColor = bg;
+                            Console.ForegroundColor = fg;
+                        }
+                        Console.Write(str[i].PadRight(maxLen));
                     }
                 }
                 else
                 {
-                    Console.SetCursorPosition(41, y + 18);
-                    Console.Write(FullNamePos(str, dir, pos));
-                    for (int i = FullNamePos(str, dir, pos).Length; i < 39; i++)
+                    int i=0;
+                    while(i!=17)
                     {
-                        Console.Write(" ");
+                        Console.SetCursorPosition(x, y + i);
+                        if (i == pos)
+                        {
+                            Console.BackgroundColor = fg;
+                            Console.ForegroundColor = bg;
+                        }
+                        else
+                        {
+                            Console.BackgroundColor = bg;
+                            Console.ForegroundColor = fg;
+                        }
+                        Console.Write(str[i].PadRight(maxLen));
+                        i++;
                     }
+                }
+                if (panel == "left")
+                {
+                    Console.SetCursorPosition(x, y + 18);
+                    Console.Write(FullNamePos(str, list, pos));
+                }
+                else
+                {
+                    Console.SetCursorPosition(41, y + 18);
+                    Console.Write(FullNamePos(str, list, pos));
                 }
                 ConsoleKey consoleKey = Console.ReadKey().Key;
                 switch (consoleKey)
                 {
 
                     case ConsoleKey.Enter:
-                        start.OpenDirectory(pos, dir, panel);
+                        if (panel == "right")
+                            perf.OpenDirectory(pos, str, dirR, dirL, panel);
+                        else
+                            perf.OpenDirectory(pos, str, dirR, dirL, panel);
                         break;
 
                     case ConsoleKey.Tab:
-                        start.TabDirectory(pos, dir, panel);
-                       
+                        perf.TabDirectory(dirR, dirL, panel);
+
                         break;
 
                     case ConsoleKey.F10:
-                        
-                        break;
 
+                        break;
 
                     case ConsoleKey.UpArrow:
                         if (pos > 0)
@@ -101,51 +116,20 @@ namespace NortonCommander
             }
         }
 
-        
 
-        public static string FullNamePos(string[] str, DirectoryInfo dir, int pos)
+
+        public static string FullNamePos(string[] str, List<string[]> list, int pos)
         {
-            string name = "";
-            DirectoryInfo[] dirs = dir.GetDirectories();
-            FileInfo[] files = dir.GetFiles();
-            int countD = 0;
-            foreach (var item in dirs)
+            int i = 0;
+            foreach (var item in list)
             {
-                if (item.Attributes.HasFlag(FileAttributes.Hidden))
-                    countD++;
+                if (i == pos && str[pos] == item[0])
+                    return $"{item[0]}".PadRight(12) + $"{item[1]}".PadLeft(10)
+                        + $"{item[2]}".PadLeft(9) + $"{item[3]}".PadLeft(7);
+                i++;
             }
-
-            if (pos < dirs.Length - countD)
-            {
-                int i = 0;
-                foreach (var item in dirs)
-                {
-                    if (item.Attributes.HasFlag(FileAttributes.Hidden))
-                        continue;
-                    else if (i == pos)
-                        name = item.Name.Length <= 12 ? item.Name.PadRight(12) : item.Name.Substring(0, 12);
-                    if (str[pos] == name)
-                        return item.FullName;
-                    i++;
-                }
-            }
-            else
-            {
-                int i = dirs.Length - countD;
-                foreach (var item in files)
-                {
-                    if (item.Attributes.HasFlag(FileAttributes.Hidden))
-                        continue;
-                    else if (i == pos)
-                        name = item.Name.Length <= 12 ? $"{item.Name}".Replace(item.Extension, "").PadRight(8) +
-                        " " + $"{item.Extension}".Replace(".", "").PadLeft(3) : item.Name.Substring(0, 8).PadRight(8)
-                        + " " + $"{item.Extension}".Replace(".", "").PadLeft(3); ;
-                    if (str[pos] == name)
-                        return item.FullName;
-                    i++;
-                }
-            }
-            return null;
+            return $"..".PadRight(12) + $">UP--DIR<".PadLeft(10) + $"{DateTime.Now.Date:dd-MM-yy}".PadLeft(9)
+                + $"{DateTime.Now.ToShortTimeString()}".PadLeft(7);
         }
 
     }

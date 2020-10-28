@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace NortonCommander
 {
-    class Panels
+    class ConvertPanels
     {
-        string path = "";
         public List<string[]> ConvertDirToList(DirectoryInfo dir)
         {
             DirectoryInfo[] dirs = dir.GetDirectories();
@@ -18,13 +17,23 @@ namespace NortonCommander
             List<string[]> list = new List<string[]>();
             string[] strD;
             string[] strF;
+            int i = 0;
             foreach (var item in dirs)
             {
-                int i = 0;
-                if (item.Attributes.HasFlag(FileAttributes.Hidden))
+                if (dir.FullName != dir.Root.FullName && i == 0)
+                {
+                    strD = new string[4];
+                    strD[i++] = $"..".PadRight(12);
+                    strD[i++] = $">UP--DIR<".PadLeft(9);
+                    strD[i++] = $"{DateTime.Now.Date:dd-MM-yy}".PadLeft(8);
+                    strD[i++] = $"{DateTime.Now.ToShortTimeString()}".PadLeft(6);
+                    list.Add(strD);
+                }
+                else if (item.Attributes.HasFlag(FileAttributes.Hidden))
                     continue;
                 else if (item.Name.Length <= 12)
                 {
+                    i=0;
                     strD = new string[4];
                     strD[i++] = $"{item.Name}".PadRight(12);
                     strD[i++] = ">SUB-DIR<";
@@ -34,6 +43,7 @@ namespace NortonCommander
                 }
                 else
                 {
+                    i = 0;
                     strD = new string[4];
                     strD[i++] = item.Name.Substring(0, 12);
                     strD[i++] = ">SUB-DIR<";
@@ -41,14 +51,16 @@ namespace NortonCommander
                     strD[i++] = $"{item.CreationTimeUtc.ToShortTimeString()}".PadLeft(6);
                     list.Add(strD);
                 }
+                i++;
             }
             foreach (var item in files)
             {
-                int i = 0;
+               
                 if (item.Attributes.HasFlag(FileAttributes.Hidden))
                     continue;
                 else if (item.Name.Length <= 8)
-                {
+                { 
+                    i = 0;
                     strF = new string[4];
                     strF[i++] = $"{item.Name}".Replace(item.Extension, "").PadRight(8) +
                         " " + $"{item.Extension}".Replace(".", "").PadLeft(3);
@@ -59,6 +71,7 @@ namespace NortonCommander
                 }
                 else
                 {
+                    i = 0;
                     strF = new string[4];
                     strF[i++] = item.Name.Substring(0, 8).PadRight(8) + " " + $"{item.Extension}".
                         Replace(".", "").PadLeft(3);

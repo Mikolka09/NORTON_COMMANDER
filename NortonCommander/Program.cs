@@ -11,16 +11,16 @@ namespace NortonCommander
 {
     class Program
     {
-       
+
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.Unicode;
             Console.OutputEncoding = Encoding.UTF8;
-           
-            
-            Start start = new Start();
-            start.launchCommander("C:\\", "left");
-            
+
+
+            Performance pref = new Performance();
+            pref.launchPanelCommander();
+
             Console.ReadLine();
 
         }
