@@ -14,7 +14,7 @@ namespace NortonCommander
         public static int VerticalMenu(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
         {
             Performance perf = new Performance();
-            int maxLen = 12;
+            DrawCommander draw = new DrawCommander();
             int j = 0;
             string[] str = new string[list.Count];
             foreach (var item in list)
@@ -32,9 +32,9 @@ namespace NortonCommander
             int pos = 0;
             while (true)
             {
-                if (str.Length < 17)
+                for (int i = 0; i < str.Length; i++)
                 {
-                    for (int i = 0; i < str.Length; i++)
+                    if (i < 16)
                     {
                         Console.SetCursorPosition(x, y + i);
                         if (i == pos)
@@ -47,27 +47,24 @@ namespace NortonCommander
                             Console.BackgroundColor = bg;
                             Console.ForegroundColor = fg;
                         }
-                        Console.Write(str[i].PadRight(maxLen));
+                        Console.Write(str[i]);
                     }
-                }
-                else
-                {
-                    int i=0;
-                    while(i!=17)
+                    else
                     {
-                        Console.SetCursorPosition(x, y + i);
-                        if (i == pos)
-                        {
-                            Console.BackgroundColor = fg;
-                            Console.ForegroundColor = bg;
-                        }
-                        else
-                        {
-                            Console.BackgroundColor = bg;
-                            Console.ForegroundColor = fg;
-                        }
-                        Console.Write(str[i].PadRight(maxLen));
-                        i++;
+                           Console.SetCursorPosition(x, pos);
+                                if (pos == 17)
+                            {
+                                Console.BackgroundColor = fg;
+                                Console.ForegroundColor = bg;
+                            }
+                            else
+                            {
+                                Console.BackgroundColor = bg;
+                                Console.ForegroundColor = fg;
+                            }
+                        
+                            //draw.WriteLongList(list, i, panel);
+                        
                     }
                 }
                 if (panel == "left")
@@ -93,7 +90,6 @@ namespace NortonCommander
 
                     case ConsoleKey.Tab:
                         perf.TabDirectory(dirR, dirL, panel);
-
                         break;
 
                     case ConsoleKey.F10:
@@ -106,9 +102,16 @@ namespace NortonCommander
                         break;
 
                     case ConsoleKey.DownArrow:
-                        if (pos < str.Length - 1)
+                        if (pos < 16)
+                        { 
                             pos++;
-                        ;
+                          
+                        }
+                        else     
+                        {
+                            pos=17;
+                            draw.WriteLongList(list, pos, panel);
+                        }
                         break;
 
                 }

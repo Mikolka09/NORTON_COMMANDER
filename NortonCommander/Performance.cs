@@ -60,7 +60,7 @@ namespace NortonCommander
             {
                 if (panel == "right")
                 {
-                    pathR = dirs[0].Parent.FullName;
+                    pathR = dirR.Parent.FullName;
                     pathL = dirL.FullName;
                 }
                 else
@@ -98,7 +98,6 @@ namespace NortonCommander
                                 pathL = item.FullName;
                             }
                         }
-
                         i++;
                     }
                 }
