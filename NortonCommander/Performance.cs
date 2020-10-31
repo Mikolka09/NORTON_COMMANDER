@@ -14,6 +14,8 @@ namespace NortonCommander
         string pathR = "D:\\";
         string pathL = "C:\\";
         string panel = "left";
+        string nameR = "";
+        string nameL = "";
 
         public void launchPanelCommander(string pathL, string pathR, string panel)
         {
@@ -27,9 +29,9 @@ namespace NortonCommander
             draw.DrawPanelLeft(listL, dirL.FullName, panel);
             draw.DrawPanelRight(listR, dirR.FullName, panel);
             if (panel == "right")
-                Menu.VerticalMenu(listR, dirR, dirL, panel);
+                Menu.VerticalMenu(listR, dirR, dirL, panel, nameR, nameL);
             else
-                Menu.VerticalMenu(listL, dirR, dirL, panel);
+                Menu.VerticalMenu(listL, dirR, dirL, panel, nameR, nameL);
         }
 
         public void launchPanelCommander()
@@ -44,29 +46,34 @@ namespace NortonCommander
             draw.DrawPanelLeft(listL, dirL.FullName, panel);
             draw.DrawPanelRight(listR, dirR.FullName, panel);
             if (panel == "right")
-                Menu.VerticalMenu(listR, dirR, dirL, panel);
+                Menu.VerticalMenu(listR, dirR, dirL, panel, nameR, nameL);
             else
-                Menu.VerticalMenu(listL, dirR, dirL, panel);
+                Menu.VerticalMenu(listL, dirR, dirL, panel, nameR, nameL);
         }
 
-        public void OpenDirectory(int pos, string[] str, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
+        public void OpenDirectory(int pos, List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
         {
+
             DirectoryInfo[] dirs;
             if (panel == "right")
                 dirs = dirR.GetDirectories();
             else
                 dirs = dirL.GetDirectories();
-            if (str[0] == "..".PadRight(12))
+            if (list[pos][0] == "..".PadRight(12))
             {
                 if (panel == "right")
                 {
+                    nameR = dirR.Name.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
                     pathR = dirR.Parent.FullName;
                     pathL = dirL.FullName;
+                    nameL = dirL.Name.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
                 }
                 else
                 {
+                    nameR = dirR.Name.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
                     pathR = dirR.FullName;
                     pathL = dirL.Parent.FullName;
+                    nameL = dirL.Name.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
                 }
             }
             else
@@ -78,9 +85,11 @@ namespace NortonCommander
                         countD++;
                 }
 
-                if (pos < dirs.Length - countD)
+                if (pos < dirs.Length - countD + 1)
                 {
                     int i = 0;
+                    if (dirL.FullName != dirL.Root.FullName || dirR.FullName != dirR.Root.FullName)
+                        i = 1;
                     foreach (var item in dirs)
                     {
                         if (item.Attributes.HasFlag(FileAttributes.Hidden))
@@ -122,5 +131,42 @@ namespace NortonCommander
                 launchPanelCommander(pathL, pathR, panel);
             }
         }
-    }
+
+        public void CreateDirectory(DirectoryInfo dirR, DirectoryInfo dirL, string panel)
+        {
+            if (panel == "right")
+            {
+                Console.Write("Name Directory: ");
+                nameR = Console.ReadLine();
+                string name = $"{dirR.FullName}" + "\\" + nameR;
+                DirectoryInfo newDir = new DirectoryInfo(name);
+                if (!newDir.Exists)
+                {
+                    newDir.Create();
+                }
+                pathR = newDir.Parent.FullName;
+                nameR = nameR.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
+                launchPanelCommander(pathL, pathR, panel);
+            }
+            else
+            {
+                Console.Write("Name Directory: ");
+                nameL = Console.ReadLine();
+                string name = $"{dirL.FullName}" + "\\" + nameL;
+                DirectoryInfo newDir = new DirectoryInfo(name);
+                if (!newDir.Exists)
+                {
+                    newDir.Create();
+                }
+                pathL = newDir.Parent.FullName;
+                nameR = nameL.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
+                launchPanelCommander(pathL, pathR, panel);
+            }
+
+        }
+
+        public void DellDirectory(DirectoryInfo dirR, DirectoryInfo dirL, string panel)
+        {
+
+        }
 }

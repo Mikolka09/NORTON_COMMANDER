@@ -18,18 +18,18 @@ namespace NortonCommander
             string[] strD;
             string[] strF;
             int i = 0;
+            if (dir.FullName != dir.Root.FullName)
+            {
+                strD = new string[4];
+                strD[i++] = $"..".PadRight(12);
+                strD[i++] = $">UP--DIR<".PadLeft(9);
+                strD[i++] = $"{DateTime.Now.Date:dd-MM-yy}".PadLeft(8);
+                strD[i++] = $"{DateTime.Now.ToShortTimeString()}".PadLeft(6);
+                list.Add(strD);
+            }
             foreach (var item in dirs)
             {
-                if (dir.FullName != dir.Root.FullName && i == 0)
-                {
-                    strD = new string[4];
-                    strD[i++] = $"..".PadRight(12);
-                    strD[i++] = $">UP--DIR<".PadLeft(9);
-                    strD[i++] = $"{DateTime.Now.Date:dd-MM-yy}".PadLeft(8);
-                    strD[i++] = $"{DateTime.Now.ToShortTimeString()}".PadLeft(6);
-                    list.Add(strD);
-                }
-                else if (item.Attributes.HasFlag(FileAttributes.Hidden))
+                if (item.Attributes.HasFlag(FileAttributes.Hidden))
                     continue;
                 else if (item.Name.Length <= 12)
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -12,6 +13,7 @@ namespace NortonCommander
 
         int sizeWindow = 38;
         int y = 22;
+        string text = "";
 
         public void DrawPanelLeft(List<string[]> list, string adress, string panel)
         {
@@ -19,7 +21,7 @@ namespace NortonCommander
             Console.ForegroundColor = ConsoleColor.White;
 
             int x = 0;
-            string text = adress;
+            text = adress;
             int k = 0;
 
             while (k != 4)
@@ -40,8 +42,16 @@ namespace NortonCommander
                             Console.Write("\u2550");
                     }
                     Console.Write("\u2557");
-                    Console.BackgroundColor = ConsoleColor.Cyan;
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    if (panel == "left")
+                    {
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkBlue;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
                     Console.SetCursorPosition(txt, 0);
                     Console.Write(" " + text + " ");
                     Console.BackgroundColor = ConsoleColor.DarkBlue;
@@ -142,12 +152,14 @@ namespace NortonCommander
                 k++;
             }
             PrintDF(list, "left");
+            if (panel == "left")
+                CommandString(text, panel);
         }
 
         public void DrawPanelRight(List<string[]> list, string adress, string panel)
         {
             int x = sizeWindow + 2;
-            string text = adress;
+            text = adress;
             int k = 0;
             while (k != 4)
             {
@@ -183,8 +195,16 @@ namespace NortonCommander
                     }
                     Console.SetCursorPosition(x + sizeWindow + 1, 0);
                     Console.WriteLine("\u2557");
-                    Console.BackgroundColor = ConsoleColor.Cyan;
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    if (panel == "right")
+                    {
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkBlue;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
                     Console.SetCursorPosition(x + txt, 0);
                     Console.Write(" " + text + " ");
                     Console.BackgroundColor = ConsoleColor.DarkBlue;
@@ -313,18 +333,45 @@ namespace NortonCommander
                 }
                 k++;
             }
-
+            if (panel == "right")
+                CommandString(text, panel);
             CommandButtons();
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.ForegroundColor = ConsoleColor.White;
             PrintDF(list, "right");
         }
 
+        public void CommandString(string text, string panel)
+        {
+            if (panel == "right")
+            {
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.SetCursorPosition(0, y);
+                Console.Write(text);
+                for (int i = 0; i < sizeWindow * 2 - text.Length; i++)
+                {
+                    Console.Write(" ");
+                }
+            }
+            else
+            {
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.SetCursorPosition(0, y);
+                Console.Write(text);
+                for (int i = 0; i < sizeWindow * 2 - text.Length; i++)
+                {
+                    Console.Write(" ");
+                }
+                Console.BackgroundColor = ConsoleColor.DarkBlue;
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+        }
+
         public void CommandButtons()
         {
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("C:\\Disc_");
+            Console.WriteLine();
             for (int i = 0; i < 11; i++)
             {
                 switch (i)
@@ -572,43 +619,191 @@ namespace NortonCommander
             }
         }
 
-        public void WriteLongList(List<string[]> list, int i, string panel)
+        public void WriteLongListDown(List<string[]> list, int i, string panel)
         {
             int x = 0;
             int y = 2;
             if (panel == "left")
             {
 
-                for (int j = i; j < list.Count; j++)
+                int k = (i - 17) + 1;
+                int p = 0;
+                while (k != p)
                 {
-                    Console.SetCursorPosition(x + 1, y + j - i);
-                    Console.WriteLine(list[j - i + 1][0]);
-                    Console.SetCursorPosition(x + 14, y + j - i);
-                    Console.WriteLine(list[j - i + 1][1]);
-                    Console.SetCursorPosition(x + 24, y + j - i);
-                    Console.WriteLine(list[j - i + 1][2]);
-                    Console.SetCursorPosition(x + 33, y + j - i);
-                    Console.WriteLine(list[j - i + 1][3]);
-                    if (j > i * 2 - 2)
-                        break;
+                    p = k;
+                    for (int j = p; j < i + 1; j++)
+                    {
+                        if (j == i)
+                        {
+                            Console.BackgroundColor = ConsoleColor.White;
+                            Console.ForegroundColor = ConsoleColor.DarkBlue;
+                            Console.SetCursorPosition(x + 1, y + j - p);
+                            Console.WriteLine(list[j][0]);
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.SetCursorPosition(x + 14, y + j - p);
+                            Console.WriteLine(list[j][1]);
+                            Console.SetCursorPosition(x + 24, y + j - p);
+                            Console.WriteLine(list[j][2]);
+                            Console.SetCursorPosition(x + 33, y + j - p);
+                            Console.WriteLine(list[j][3]);
+                        }
+
+                        else
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.SetCursorPosition(x + 1, y + j - p);
+                            Console.WriteLine(list[j][0]);
+                            Console.SetCursorPosition(x + 14, y + j - p);
+                            Console.WriteLine(list[j][1]);
+                            Console.SetCursorPosition(x + 24, y + j - p);
+                            Console.WriteLine(list[j][2]);
+                            Console.SetCursorPosition(x + 33, y + j - p);
+                            Console.WriteLine(list[j][3]);
+                        }
+
+                    }
+
                 }
             }
             else
             {
+
+                int k = (i - 17) + 1;
+                int p = 0;
                 x = sizeWindow + 2;
-                for (int j = i; j < list.Count; j++)
+                while (k != p)
                 {
-                    Console.SetCursorPosition(x + 1, y + j - i);
-                    Console.WriteLine(list[j - i + 1][0]);
-                    Console.SetCursorPosition(x + 14, y + j - i);
-                    Console.WriteLine(list[j - i + 1][1]);
-                    Console.SetCursorPosition(x + 24, y + j - i);
-                    Console.WriteLine(list[j - i + 1][2]);
-                    Console.SetCursorPosition(x + 33, y + j - i);
-                    Console.WriteLine(list[j - i + 1][3]);
-                    if (j > i * 2 - 2)
-                        break;
+                    p = k;
+                    for (int j = p; j < i + 1; j++)
+                    {
+                        if (j == i)
+                        {
+                            Console.BackgroundColor = ConsoleColor.White;
+                            Console.ForegroundColor = ConsoleColor.DarkBlue;
+                            Console.SetCursorPosition(x + 1, y + j - p);
+                            Console.WriteLine(list[j][0]);
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.SetCursorPosition(x + 14, y + j - p);
+                            Console.WriteLine(list[j][1]);
+                            Console.SetCursorPosition(x + 24, y + j - p);
+                            Console.WriteLine(list[j][2]);
+                            Console.SetCursorPosition(x + 33, y + j - p);
+                            Console.WriteLine(list[j][3]);
+                        }
+                        else
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.SetCursorPosition(x + 1, y + j - p);
+                            Console.WriteLine(list[j][0]);
+                            Console.SetCursorPosition(x + 14, y + j - p);
+                            Console.WriteLine(list[j][1]);
+                            Console.SetCursorPosition(x + 24, y + j - p);
+                            Console.WriteLine(list[j][2]);
+                            Console.SetCursorPosition(x + 33, y + j - p);
+                            Console.WriteLine(list[j][3]);
+                        }
+
+                    }
+
                 }
+
+            }
+        }
+
+        public void WriteLongListUp(List<string[]> list, int i, string panel)
+        {
+            int x = 0;
+            int y = 2;
+            if (panel == "left")
+            {
+
+                int k = (i - 17) + 1;
+                int p = 0;
+                while (k != p)
+                {
+                    p = k;
+                    for (int j = p; j < i + 1; j++)
+                    {
+                        if (j == i)
+                        {
+                            Console.BackgroundColor = ConsoleColor.White;
+                            Console.ForegroundColor = ConsoleColor.DarkBlue;
+                            Console.SetCursorPosition(x + 1, y + j - p);
+                            Console.WriteLine(list[j][0]);
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.SetCursorPosition(x + 14, y + j - p);
+                            Console.WriteLine(list[j][1]);
+                            Console.SetCursorPosition(x + 24, y + j - p);
+                            Console.WriteLine(list[j][2]);
+                            Console.SetCursorPosition(x + 33, y + j - p);
+                            Console.WriteLine(list[j][3]);
+                        }
+
+                        else
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.SetCursorPosition(x + 1, y + j - p);
+                            Console.WriteLine(list[j][0]);
+                            Console.SetCursorPosition(x + 14, y + j - p);
+                            Console.WriteLine(list[j][1]);
+                            Console.SetCursorPosition(x + 24, y + j - p);
+                            Console.WriteLine(list[j][2]);
+                            Console.SetCursorPosition(x + 33, y + j - p);
+                            Console.WriteLine(list[j][3]);
+                        }
+
+                    }
+
+                }
+            }
+            else
+            {
+                int g = list.Count - 17;
+                x = sizeWindow + 2;
+                if (i != g)
+                {
+
+                    for (int j = list.Count - 1; j > g + 1; j--)
+                    {
+                        if (j == i)
+                        {
+                            Console.BackgroundColor = ConsoleColor.White;
+                            Console.ForegroundColor = ConsoleColor.DarkBlue;
+                            Console.SetCursorPosition(x + 1, j - g + y);
+                            Console.WriteLine(list[j][0]);
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.SetCursorPosition(x + 14, j - g + y);
+                            Console.WriteLine(list[j][1]);
+                            Console.SetCursorPosition(x + 24, j - g + y);
+                            Console.WriteLine(list[j][2]);
+                            Console.SetCursorPosition(x + 33, j - g + y);
+                            Console.WriteLine(list[j][3]);
+                        }
+                        else
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.SetCursorPosition(x + 1, j - g + y);
+                            Console.WriteLine(list[j][0]);
+                            Console.SetCursorPosition(x + 14, j - g + y);
+                            Console.WriteLine(list[j][1]);
+                            Console.SetCursorPosition(x + 24, j - g + y);
+                            Console.WriteLine(list[j][2]);
+                            Console.SetCursorPosition(x + 33, j - g + y);
+                            Console.WriteLine(list[j][3]);
+                        }
+
+                    }
+
+                }
+
             }
         }
     }

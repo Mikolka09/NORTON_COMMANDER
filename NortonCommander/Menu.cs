@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,33 +12,31 @@ namespace NortonCommander
     class Menu
     {
 
-        public static int VerticalMenu(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
+        public static int VerticalMenu(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, string nameR, string nameL)
         {
             Performance perf = new Performance();
             DrawCommander draw = new DrawCommander();
-            int j = 0;
-            string[] str = new string[list.Count];
-            foreach (var item in list)
-            {
-                str[j++] = item[0];
-            }
             ConsoleColor bg = Console.BackgroundColor;
             ConsoleColor fg = Console.ForegroundColor;
-
-            int x = 1;
+            int pos = 0;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i][0] == nameR || list[i][0] == nameL)
+                    pos = i;
+            }
+            int x = 0;
             if (panel == "right")
-                x = 41;
+                x = 40;
             int y = 2;
             Console.CursorVisible = false;
-            int pos = 0;
             while (true)
             {
-                for (int i = 0; i < str.Length; i++)
+                for (int i = 0; i < list.Count; i++)
                 {
-                    if (i < 16)
+                    if (i < 17)
                     {
-                        Console.SetCursorPosition(x, y + i);
-                        if (i == pos)
+                        Console.SetCursorPosition(x + 1, y + i);
+                        if (pos == i)
                         {
                             Console.BackgroundColor = fg;
                             Console.ForegroundColor = bg;
@@ -47,12 +46,22 @@ namespace NortonCommander
                             Console.BackgroundColor = bg;
                             Console.ForegroundColor = fg;
                         }
-                        Console.Write(str[i]);
+                        Console.WriteLine(list[i][0]);
+                        Console.BackgroundColor = ConsoleColor.DarkBlue;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.SetCursorPosition(x + 14, y + i);
+                        Console.WriteLine(list[i][1]);
+                        Console.SetCursorPosition(x + 24, y + i);
+                        Console.WriteLine(list[i][2]);
+                        Console.SetCursorPosition(x + 33, y + i);
+                        Console.WriteLine(list[i][3]);
                     }
-                    else
+                    else if (pos > 16)
                     {
-                           Console.SetCursorPosition(x, pos);
-                                if (pos == 17)
+                        for (int j = pos; j < pos + 17; j++)
+                        {
+                            Console.SetCursorPosition(x + 1, y + j - pos);
+                            if (j == pos)
                             {
                                 Console.BackgroundColor = fg;
                                 Console.ForegroundColor = bg;
@@ -62,34 +71,51 @@ namespace NortonCommander
                                 Console.BackgroundColor = bg;
                                 Console.ForegroundColor = fg;
                             }
-                        
-                            //draw.WriteLongList(list, i, panel);
-                        
+                            Console.WriteLine(list[j - pos + 1][0]);
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.SetCursorPosition(x + 14, y + j - pos);
+                            Console.WriteLine(list[j - pos + 1][1]);
+                            Console.SetCursorPosition(x + 24, y + j - pos);
+                            Console.WriteLine(list[j - pos + 1][2]);
+                            Console.SetCursorPosition(x + 33, y + j - pos);
+                            Console.WriteLine(list[j - pos + 1][3]);
+                        }
                     }
                 }
+
+
                 if (panel == "left")
                 {
-                    Console.SetCursorPosition(x, y + 18);
-                    Console.Write(FullNamePos(str, list, pos));
+                    Console.SetCursorPosition(x + 1, y + 18);
+                    Console.Write(FullNamePos(list, pos));
                 }
                 else
                 {
                     Console.SetCursorPosition(41, y + 18);
-                    Console.Write(FullNamePos(str, list, pos));
+                    Console.Write(FullNamePos(list, pos));
                 }
-                ConsoleKey consoleKey = Console.ReadKey().Key;
+                ConsoleKey consoleKey = Console.ReadKey(true).Key;
                 switch (consoleKey)
                 {
 
                     case ConsoleKey.Enter:
                         if (panel == "right")
-                            perf.OpenDirectory(pos, str, dirR, dirL, panel);
+                            perf.OpenDirectory(pos, list, dirR, dirL, panel);
                         else
-                            perf.OpenDirectory(pos, str, dirR, dirL, panel);
+                            perf.OpenDirectory(pos, list, dirR, dirL, panel);
                         break;
 
                     case ConsoleKey.Tab:
                         perf.TabDirectory(dirR, dirL, panel);
+                        break;
+
+                    case ConsoleKey.F7:
+                        perf.CreateDirectory(dirR, dirL, panel);
+                        break;
+
+                    case ConsoleKey.F8:
+                        perf.DellDirectory(dirR, dirL, panel);
                         break;
 
                     case ConsoleKey.F10:
@@ -97,42 +123,59 @@ namespace NortonCommander
                         break;
 
                     case ConsoleKey.UpArrow:
+                        //if (list.Count > 16)
+                        //{
+                        //    if (pos > 0)
+                        //    {
+                        //        pos--;
+                        //        draw.WriteLongListUp(list, pos, panel);
+                        //    }
+                        //    else
+                        //        break;
+
+                        //}
+                        //else 
                         if (pos > 0)
                             pos--;
                         break;
 
                     case ConsoleKey.DownArrow:
-                        if (pos < 16)
-                        { 
+
+                        //if (list.Count > 16)
+                        //{
+                        //    if (pos < list.Count - 1)
+                        //    {
+                        //        pos++;
+                        //        if (pos > 16)
+                        //            draw.WriteLongListDown(list, pos, panel);
+                        //    }
+                        //    else
+                        //        break;
+                        //}
+                        //else 
+                        if (pos < list.Count - 1)
                             pos++;
-                          
-                        }
-                        else     
-                        {
-                            pos=17;
-                            draw.WriteLongList(list, pos, panel);
-                        }
                         break;
-
                 }
-
             }
         }
 
 
 
-        public static string FullNamePos(string[] str, List<string[]> list, int pos)
+        public static string FullNamePos(List<string[]> list, int pos)
         {
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.White;
             int i = 0;
             foreach (var item in list)
             {
-                if (i == pos && str[pos] == item[0])
+                if (i == pos && list[pos][0] == item[0])
                     return $"{item[0]}".PadRight(12) + $"{item[1]}".PadLeft(10)
                         + $"{item[2]}".PadLeft(9) + $"{item[3]}".PadLeft(7);
                 i++;
             }
-            return $"..".PadRight(12) + $">UP--DIR<".PadLeft(10) + $"{DateTime.Now.Date:dd-MM-yy}".PadLeft(9)
-                + $"{DateTime.Now.ToShortTimeString()}".PadLeft(7);
+            return $"{list[list.Count - 1][0]}".PadRight(12) + $"{list[list.Count - 1][1]}".PadLeft(10)
+                        + $"{list[list.Count - 1][2]}".PadLeft(9) + $"{list[list.Count - 1][3]}".PadLeft(7);
         }
 
     }
