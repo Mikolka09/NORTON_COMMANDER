@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NortonCommander
@@ -88,7 +89,7 @@ namespace NortonCommander
                 if (pos < dirs.Length - countD + 1)
                 {
                     int i = 0;
-                    if (dirL.FullName != dirL.Root.FullName || dirR.FullName != dirR.Root.FullName)
+                    if (dirL.FullName != dirL.Root.FullName && panel == "left" || dirR.FullName != dirR.Root.FullName && panel == "right")
                         i = 1;
                     foreach (var item in dirs)
                     {
@@ -111,6 +112,27 @@ namespace NortonCommander
                     }
                 }
             }
+            launchPanelCommander(pathL, pathR, panel);
+        }
+
+        public void TabDisc(DirectoryInfo dirR, DirectoryInfo dirL, string panel)
+        {
+            DriveInfo[] allDrives = DriveInfo.GetDrives();
+            string[] discs = new string[allDrives.Length];
+            int i = 0;
+            foreach (var item in allDrives)
+            {
+                discs[i++] = item.Name.Substring(0, 1);
+            }
+            Menu.GorizontMenu(discs, dirR, dirL, panel);
+        }
+
+        public void ChangeDisc(string[] discs, string panel, int pos)
+        {
+            if (panel == "right")
+                pathR = discs[pos] + ":\\";
+            else
+                pathL = discs[pos] + ":\\";
             launchPanelCommander(pathL, pathR, panel);
         }
 
@@ -165,8 +187,359 @@ namespace NortonCommander
 
         }
 
-        public void DellDirectory(DirectoryInfo dirR, DirectoryInfo dirL, string panel)
+        public void DellDirectoryFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos)
         {
+            string dirName = "";
+            string fileName = "";
+            int count = 0;
+            if (panel == "right")
+            {
+                DirectoryInfo[] dirs = dirR.GetDirectories();
+                for (int i = 0; i < dirs.Length; i++)
+                {
+                    dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
+                    if (dirName == list[pos][0])
+                    {
+                        dirName = dirs[i].FullName;
+                        count++;
+                        break;
+                    }
+                }
+                if (count > 0)
+                {
+                    if (dirR.FullName != dirR.Root.FullName)
+                    {
+                        pathR = dirR.FullName;
+                        nameR = dirR.Name;
+                        nameR = nameR.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
+                    }
+                }
+                else
+                {
+                    FileInfo[] files = dirR.GetFiles();
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        if (files[i].Name.Length <= 8)
+                            fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                            Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        else
+                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Substring(0, 8).PadRight(8) + " " +
+                                    $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        if (fileName == list[pos][0])
+                        {
+                            fileName = files[i].FullName;
+                            break;
+                        }
+                    }
+                    File.Delete(fileName);
+                    Console.WriteLine("File Delete!");
+                    Thread.Sleep(2500);
+                    pathR = dirR.FullName;
+                    pathL = dirL.FullName;
+                    launchPanelCommander(pathL, pathR, panel);
+                }
+            }
+            else
+            {
+                DirectoryInfo[] dirs = dirL.GetDirectories();
+                for (int i = 0; i < dirs.Length; i++)
+                {
+                    dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
+                    if (dirName == list[pos][0])
+                    {
+                        dirName = dirs[i].FullName;
+                        count++;
+                        break;
+                    }
+                }
+                if (count > 0)
+                {
+                    if (dirL.FullName != dirL.Root.FullName)
+                    {
+                        pathL = dirL.FullName;
+                        nameL = dirL.Name;
+                        nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
 
+                    }
+                }
+                else
+                {
+                    FileInfo[] files = dirL.GetFiles();
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        if (files[i].Name.Length <= 8)
+                            fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                            Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        else
+                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Substring(0, 8).PadRight(8) + " " +
+                                    $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        if (fileName == list[pos][0])
+                        {
+                            fileName = files[i].FullName;
+                            break;
+                        }
+                    }
+                    File.Delete(fileName);
+                    Console.WriteLine("File Delete!");
+                    Thread.Sleep(2500);
+                    pathR = dirR.FullName;
+                    pathL = dirL.FullName;
+                    launchPanelCommander(pathL, pathR, panel);
+                }
+            }
+            try
+            {
+                Directory.Delete(dirName, true);
+                Console.WriteLine("Directory Delete!");
+                Thread.Sleep(2500);
+                pathR = dirR.FullName;
+                pathL = dirL.FullName;
+                launchPanelCommander(pathL, pathR, panel);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
+
+        public void CopyDirectoryFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos)
+        {
+            string dirName = "";
+            string fileName = "";
+            int count = 0;
+            if (panel == "right")
+            {
+                if (list[pos][0] == "..".PadRight(12))
+                    pos++;
+                DirectoryInfo[] dirs = dirR.GetDirectories();
+                for (int i = 0; i < dirs.Length; i++)
+                {
+                    dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
+                    if (dirName == list[pos][0])
+                    {
+                        count++;
+                        break;
+                    }
+                }
+                if (count > 0)
+                {
+                    if (!Directory.EnumerateFiles(dirR.FullName + "\\" + dirName, "*.*", SearchOption.AllDirectories).Any())
+                    {
+                        nameL = dirName;
+                        string name = $"{dirL.FullName}" + "\\" + nameL;
+                        DirectoryInfo newDir = new DirectoryInfo(name);
+                        if (!newDir.Exists)
+                        {
+                            newDir.Create();
+                        }
+                        pathL = newDir.FullName;
+                        nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < dirs.Length; i++)
+                        {
+                            dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
+                            if (dirName == list[pos][0])
+                            {
+                                pathR = dirs[i].FullName;
+                                nameL = dirs[i].Name;
+                                break;
+                            }
+                        }
+                        string name = $"{dirL.FullName}" + "\\" + nameL;
+                        DirectoryInfo newDir = new DirectoryInfo(name);
+                        if (!newDir.Exists)
+                        {
+                            newDir.Create();
+                        }
+                        pathL = newDir.FullName;
+                        nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                        DirectoryInfo dir = new DirectoryInfo(pathR);
+                        FileInfo[] files = dir.GetFiles();
+                        for (int i = 0; i < files.Length; i++)
+                        {
+                            FileInfo file = new FileInfo(files[i].FullName);
+                            file.CopyTo(pathL + "\\" + files[i].Name, true);
+                        }
+                        DirectoryInfo[] newDirs = dir.GetDirectories();
+                        if (newDirs.Length > 0)
+                        {
+                            dirR = new DirectoryInfo(pathR);
+                            dirL = new DirectoryInfo(pathL);
+                            for (int i = 0; i < newDirs.Length; i++)
+                            {
+                                CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i);
+                            }
+
+                        }
+                    }
+                }
+                else
+                {
+                    string nameFile = "";
+                    FileInfo[] files = dirR.GetFiles();
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        if (files[i].Name.Length <= 8)
+                            fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                            Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        else
+                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Substring(0, 8).PadRight(8) + " " +
+                                    $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        if (fileName == list[pos][0])
+                        {
+                            fileName = files[i].FullName;
+                            nameFile = files[i].Name;
+                            break;
+                        }
+                    }
+                    File.Copy(fileName, dirL.FullName + "\\" + nameFile, true);
+
+                }
+
+                pathR = dirR.FullName;
+                pathL = dirL.FullName;
+                launchPanelCommander(pathL, pathR, panel);
+            }
+            else
+            {
+                if (list[pos][0] == "..".PadRight(12))
+                    pos++;
+                DirectoryInfo[] dirs = dirL.GetDirectories();
+                for (int i = 0; i < dirs.Length; i++)
+                {
+                    dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
+                    if (dirName == list[pos][0])
+                    {
+                        count++;
+                        break;
+                    }
+                }
+                if (count > 0)
+                {
+                    if (!Directory.EnumerateFiles(dirL.FullName + "\\" + dirName, "*.*", SearchOption.AllDirectories).Any())
+                    {
+                        nameL = dirName;
+                        string name = $"{dirR.FullName}" + "\\" + nameL;
+                        DirectoryInfo newDir = new DirectoryInfo(name);
+                        if (!newDir.Exists)
+                        {
+                            newDir.Create();
+                        }
+                        pathR = newDir.FullName;
+                        nameR = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < dirs.Length; i++)
+                        {
+                            dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
+                            if (dirName == list[pos][0])
+                            {
+                                pathL = dirs[i].FullName;
+                                nameR = dirs[i].Name;
+                                break;
+                            }
+                        }
+                        string name = $"{dirR.FullName}" + "\\" + nameR;
+                        DirectoryInfo newDir = new DirectoryInfo(name);
+                        if (!newDir.Exists)
+                        {
+                            newDir.Create();
+                        }
+                        pathR = newDir.FullName;
+                        nameR = nameR.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                        DirectoryInfo dir = new DirectoryInfo(pathL);
+                        FileInfo[] files = dir.GetFiles();
+                        for (int i = 0; i < files.Length; i++)
+                        {
+                            FileInfo file = new FileInfo(files[i].FullName);
+                            file.CopyTo(pathR + "\\" + files[i].Name, true);
+                        }
+                        DirectoryInfo[] newDirs = dir.GetDirectories();
+                        if (newDirs.Length > 0)
+                        {
+                            dirR = new DirectoryInfo(pathR);
+                            dirL = new DirectoryInfo(pathL);
+                            for (int i = 0; i < newDirs.Length; i++)
+                            {
+                                CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i);
+                            }
+
+                        }
+                    }
+                }
+                else
+                {
+                    string nameFile = "";
+                    FileInfo[] files = dirL.GetFiles();
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        if (files[i].Name.Length <= 8)
+                            fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                            Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        else
+                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Substring(0, 8).PadRight(8) + " " +
+                                    $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        if (fileName == list[pos][0])
+                        {
+                            fileName = files[i].FullName;
+                            nameFile = files[i].Name;
+                            break;
+                        }
+                    }
+                    File.Copy(fileName, dirR.FullName + "\\" + nameFile, true);
+
+                }
+
+                pathR = dirR.FullName;
+                pathL = dirL.FullName;
+                launchPanelCommander(pathL, pathR, panel);
+            }
+        }
+
+
+        public void MoveDirectoryFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos)
+        {
+            string dirName = "";
+            string fileName = "";
+            int count = 0;
+            if (panel == "right")
+            {
+                if (list[pos][0] == "..".PadRight(12))
+                    pos++;
+                DirectoryInfo[] dirs = dirR.GetDirectories();
+                for (int i = 0; i < dirs.Length; i++)
+                {
+                    dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
+                    if (dirName == list[pos][0])
+                    {
+                        dirName = dirs[i].FullName;
+                        count++;
+                        break;
+                    }
+                }
+                if(count>0)
+                {
+                    DirectoryInfo dir = new DirectoryInfo(pathR);
+                              
+                    CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos);
+                    DellDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos);
+                }
+
+                pathR = dirR.FullName;
+                pathL = dirL.FullName;
+                launchPanelCommander(pathL, pathR, panel);
+            }
+        }
+    }
 }
