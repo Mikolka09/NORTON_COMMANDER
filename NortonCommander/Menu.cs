@@ -95,24 +95,33 @@ namespace NortonCommander
                     Console.SetCursorPosition(41, y + 18);
                     Console.Write(FullNamePos(list, pos));
                 }
-                ConsoleKeyInfo mod = new ConsoleKeyInfo();
+
                 ConsoleKey consoleKey = Console.ReadKey(true).Key;
                 switch (consoleKey)
                 {
 
                     case ConsoleKey.Enter:
-                        if (panel == "right")
-                            perf.OpenDirectory(pos, list, dirR, dirL, panel);
-                        else
-                            perf.OpenDirectory(pos, list, dirR, dirL, panel);
+                        perf.OpenDirectory(pos, list, dirR, dirL, panel);
                         break;
 
                     case ConsoleKey.Tab:
                         perf.TabDirectory(dirR, dirL, panel);
                         break;
 
+                    case ConsoleKey.F2:
+                        perf.TabDisc(dirR, dirL, panel);
+                        break;
+
+                    case ConsoleKey.F3:
+                        perf.ViewFile(list, dirR, dirL, panel, pos);
+                        break;
+
+                    case ConsoleKey.F4:
+                        perf.EditFile(list, dirR, dirL, panel, pos);
+                        break;
+
                     case ConsoleKey.F5:
-                        perf.CopyDirectoryFile(list, dirR, dirL, panel, pos);
+                        perf.CopyDirectoryFile(list, dirR, dirL, panel, pos, true);
                         break;
 
                     case ConsoleKey.F6:
@@ -124,15 +133,11 @@ namespace NortonCommander
                         break;
 
                     case ConsoleKey.F8:
-                        perf.DellDirectoryFile(list, dirR, dirL, panel, pos);
+                        perf.DellDirectoryFile(list, dirR, dirL, panel, pos, true);
                         break;
 
                     case ConsoleKey.F10:
-
-                        break;
-
-                    case ConsoleKey.F2:
-                        perf.TabDisc(dirR, dirL, panel);
+                        Environment.Exit(0);
                         break;
 
                     case ConsoleKey.UpArrow:
@@ -170,16 +175,21 @@ namespace NortonCommander
                             pos++;
                         break;
                 }
+
             }
         }
 
         public static int GorizontMenu(string[] discs, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
         {
+            DrawCommander draw = new DrawCommander();
+            draw.DrawWindowDisc();
             Performance perf = new Performance();
-            ConsoleColor bg = Console.BackgroundColor;
-            ConsoleColor fg = Console.ForegroundColor;
-            int x = 40;
-            int y = 15;
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.SetCursorPosition(34, 8);
+            Console.WriteLine("Switch Disk");
+            int x = 38;
+            int y = 10;
             Console.CursorVisible = false;
             int pos = 0;
             while (true)
@@ -190,13 +200,13 @@ namespace NortonCommander
                     Console.SetCursorPosition(x + i * 3, y);
                     if (i == pos)
                     {
-                        Console.BackgroundColor = fg;
-                        Console.ForegroundColor = bg;
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        Console.ForegroundColor = ConsoleColor.White;
                     }
                     else
                     {
-                        Console.BackgroundColor = bg;
-                        Console.ForegroundColor = fg;
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Red;
                     }
                     Console.Write(discs[i]);
                 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace NortonCommander
 {
@@ -27,8 +28,8 @@ namespace NortonCommander
             listR = panels.ConvertDirToList(dirR);
             listL = panels.ConvertDirToList(dirL);
 
-            draw.DrawPanelLeft(listL, dirL.FullName, panel);
-            draw.DrawPanelRight(listR, dirR.FullName, panel);
+            draw.DrawPanelLeft(listL, dirL.FullName, dirL.Name, panel);
+            draw.DrawPanelRight(listR, dirR.FullName, dirR.Name, panel);
             if (panel == "right")
                 Menu.VerticalMenu(listR, dirR, dirL, panel, nameR, nameL);
             else
@@ -44,76 +45,148 @@ namespace NortonCommander
             listR = panels.ConvertDirToList(dirR);
             listL = panels.ConvertDirToList(dirL);
 
-            draw.DrawPanelLeft(listL, dirL.FullName, panel);
-            draw.DrawPanelRight(listR, dirR.FullName, panel);
+            draw.DrawPanelLeft(listL, dirL.FullName, dirL.Name, panel);
+            draw.DrawPanelRight(listR, dirR.FullName, dirR.Name, panel);
             if (panel == "right")
                 Menu.VerticalMenu(listR, dirR, dirL, panel, nameR, nameL);
             else
                 Menu.VerticalMenu(listL, dirR, dirL, panel, nameR, nameL);
         }
 
+        public bool isFile(int pos, List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
+        {
+            string fileName = "";
+            FileInfo[] files;
+            if (panel == "right")
+                files = dirR.GetFiles();
+            else
+                files = dirL.GetFiles();
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                    fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                else if (files[i].Extension == "")
+                    fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
+                    fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                    Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                else
+                    fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
+                            $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                if (fileName == list[pos][0])
+                    return true;
+            }
+            return false;
+        }
+
         public void OpenDirectory(int pos, List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
         {
-
-            DirectoryInfo[] dirs;
-            if (panel == "right")
-                dirs = dirR.GetDirectories();
-            else
-                dirs = dirL.GetDirectories();
-            if (list[pos][0] == "..".PadRight(12))
+            if (!isFile(pos, list, dirR, dirL, panel))
             {
+                string dirName = "";
+
+                DirectoryInfo[] dirs;
                 if (panel == "right")
+                    dirs = dirR.GetDirectories();
+                else
+                    dirs = dirL.GetDirectories();
+
+                if (list[pos][0] == "..".PadRight(12))
                 {
-                    nameR = dirR.Name.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
-                    pathR = dirR.Parent.FullName;
-                    pathL = dirL.FullName;
-                    nameL = dirL.Name.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                    if (panel == "right")
+                    {
+                        nameR = dirR.Name.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
+                        pathR = dirR.Parent.FullName;
+                        pathL = dirL.FullName;
+                        nameL = dirL.Name.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                    }
+                    else
+                    {
+                        nameR = dirR.Name.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
+                        pathR = dirR.FullName;
+                        pathL = dirL.Parent.FullName;
+                        nameL = dirL.Name.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                    }
                 }
                 else
                 {
-                    nameR = dirR.Name.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
-                    pathR = dirR.FullName;
-                    pathL = dirL.Parent.FullName;
-                    nameL = dirL.Name.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
-                }
-            }
-            else
-            {
-                int countD = 0;
-                foreach (var item in dirs)
-                {
-                    if (item.Attributes.HasFlag(FileAttributes.Hidden))
-                        countD++;
-                }
-
-                if (pos < dirs.Length - countD + 1)
-                {
-                    int i = 0;
-                    if (dirL.FullName != dirL.Root.FullName && panel == "left" || dirR.FullName != dirR.Root.FullName && panel == "right")
-                        i = 1;
+                    int countD = 0;
                     foreach (var item in dirs)
                     {
                         if (item.Attributes.HasFlag(FileAttributes.Hidden))
-                            continue;
-                        else if (i == pos)
+                            countD++;
+                    }
+
+                    if (pos < dirs.Length - countD + 1)
+                    {
+                        int i = 0;
+                        if (dirL.FullName != dirL.Root.FullName && panel == "left" || dirR.FullName != dirR.Root.FullName && panel == "right")
+                            i = 1;
+                        foreach (var item in dirs)
                         {
-                            if (panel == "right")
+                            if (item.Attributes.HasFlag(FileAttributes.Hidden))
+                                continue;
+                            else if (i == pos)
                             {
-                                pathR = item.FullName;
-                                pathL = dirL.FullName;
+                                if (panel == "right")
+                                {
+                                    pathR = item.FullName;
+                                    pathL = dirL.FullName;
+                                }
+                                else
+                                {
+                                    pathR = dirR.FullName;
+                                    pathL = item.FullName;
+                                }
                             }
-                            else
-                            {
-                                pathR = dirR.FullName;
-                                pathL = item.FullName;
-                            }
+                            i++;
                         }
-                        i++;
                     }
                 }
+                launchPanelCommander(pathL, pathR, panel);
             }
-            launchPanelCommander(pathL, pathR, panel);
+            else
+            {
+                string fileName = "";
+                string name = "";
+                FileInfo[] files;
+                if (panel == "right")
+                    files = dirR.GetFiles();
+                else
+                    files = dirL.GetFiles();
+                for (int i = 0; i < files.Length; i++)
+                {
+                    if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                        fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                    else if (files[i].Extension == "")
+                        fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                    else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
+                        fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                        " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                        Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                    else
+                        fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
+                                $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                                " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                    if (fileName == list[pos][0])
+                    {
+                        fileName = files[i].FullName;
+                        name = $"{files[i].Extension}".Replace(".", "");
+                        break;
+                    }
+                }
+                if (name == "txt")
+                    Process.Start("Notepad.exe", fileName);
+                if (name == "jpg" || name == "bmp" || name == "gif" || name == "tiff" || name == "png")
+                    Process.Start("mspaint.exe", fileName);
+                else
+                    Process.Start(fileName);
+            }
+
         }
+
 
         public void TabDisc(DirectoryInfo dirR, DirectoryInfo dirL, string panel)
         {
@@ -181,13 +254,76 @@ namespace NortonCommander
                     newDir.Create();
                 }
                 pathL = newDir.Parent.FullName;
-                nameR = nameL.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
+                nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
                 launchPanelCommander(pathL, pathR, panel);
             }
 
         }
 
-        public void DellDirectoryFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos)
+        public void ViewFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos)
+        {
+            string fileName = "";
+            FileInfo[] files;
+            if (panel == "right")
+                files = dirR.GetFiles();
+            else
+                files = dirL.GetFiles();
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                    fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                else if (files[i].Extension == "")
+                    fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
+                    fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                    Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                else
+                    fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
+                            $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                if (fileName == list[pos][0])
+                {
+                    fileName = files[i].FullName;
+                    break;
+                }
+            }
+            Process.Start("Notepad.exe", fileName);
+
+        }
+
+        public void EditFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos)
+        {
+            string fileName = "";
+            FileInfo[] files;
+            if (panel == "right")
+                files = dirR.GetFiles();
+            else
+                files = dirL.GetFiles();
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                    fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                else if (files[i].Extension == "")
+                    fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
+                    fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                    Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                else
+                    fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
+                            $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                if (fileName == list[pos][0])
+                {
+                    fileName = files[i].FullName;
+                    break;
+                }
+            }
+            Process.Start("Notepad.exe", fileName);
+        }
+
+        public void DellDirectoryFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos, bool bl)
         {
             string dirName = "";
             string fileName = "";
@@ -219,12 +355,16 @@ namespace NortonCommander
                     FileInfo[] files = dirR.GetFiles();
                     for (int i = 0; i < files.Length; i++)
                     {
-                        if (files[i].Name.Length <= 8)
+                        if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                            fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                        else if (files[i].Extension == "")
+                            fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                        else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
                             fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
                             " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
                             Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
                         else
-                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Substring(0, 8).PadRight(8) + " " +
+                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
                                     $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
                                     " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
                         if (fileName == list[pos][0])
@@ -234,8 +374,11 @@ namespace NortonCommander
                         }
                     }
                     File.Delete(fileName);
-                    Console.WriteLine("File Delete!");
-                    Thread.Sleep(2500);
+                    if (bl)
+                    {
+                        draw.DrawWindowDell("File Delete!");
+                        Thread.Sleep(2000);
+                    }
                     pathR = dirR.FullName;
                     pathL = dirL.FullName;
                     launchPanelCommander(pathL, pathR, panel);
@@ -269,12 +412,16 @@ namespace NortonCommander
                     FileInfo[] files = dirL.GetFiles();
                     for (int i = 0; i < files.Length; i++)
                     {
-                        if (files[i].Name.Length <= 8)
+                        if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                            fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                        else if (files[i].Extension == "")
+                            fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                        else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
                             fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
                             " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
                             Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
                         else
-                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Substring(0, 8).PadRight(8) + " " +
+                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
                                     $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
                                     " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
                         if (fileName == list[pos][0])
@@ -284,8 +431,8 @@ namespace NortonCommander
                         }
                     }
                     File.Delete(fileName);
-                    Console.WriteLine("File Delete!");
-                    Thread.Sleep(2500);
+                    draw.DrawWindowDell("File Delete!");
+                    Thread.Sleep(2000);
                     pathR = dirR.FullName;
                     pathL = dirL.FullName;
                     launchPanelCommander(pathL, pathR, panel);
@@ -294,8 +441,11 @@ namespace NortonCommander
             try
             {
                 Directory.Delete(dirName, true);
-                Console.WriteLine("Directory Delete!");
-                Thread.Sleep(2500);
+                if (bl)
+                {
+                    draw.DrawWindowDell("Directory Delete!");
+                    Thread.Sleep(2000);
+                }
                 pathR = dirR.FullName;
                 pathL = dirL.FullName;
                 launchPanelCommander(pathL, pathR, panel);
@@ -306,7 +456,7 @@ namespace NortonCommander
             }
         }
 
-        public void CopyDirectoryFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos)
+        public void CopyDirectoryFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos, bool bl)
         {
             string dirName = "";
             string fileName = "";
@@ -373,7 +523,7 @@ namespace NortonCommander
                             dirL = new DirectoryInfo(pathL);
                             for (int i = 0; i < newDirs.Length; i++)
                             {
-                                CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i);
+                                CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i, false);
                             }
 
                         }
@@ -385,12 +535,16 @@ namespace NortonCommander
                     FileInfo[] files = dirR.GetFiles();
                     for (int i = 0; i < files.Length; i++)
                     {
-                        if (files[i].Name.Length <= 8)
+                        if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                            fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                        else if (files[i].Extension == "")
+                            fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                        else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
                             fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
                             " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
                             Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
                         else
-                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Substring(0, 8).PadRight(8) + " " +
+                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
                                     $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
                                     " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
                         if (fileName == list[pos][0])
@@ -401,12 +555,17 @@ namespace NortonCommander
                         }
                     }
                     File.Copy(fileName, dirL.FullName + "\\" + nameFile, true);
+                    pathR = dirR.FullName;
+                    pathL = dirL.FullName;
+                    if (bl)
+                        launchPanelCommander(pathL, pathR, panel);
 
                 }
 
-                pathR = dirR.FullName;
-                pathL = dirL.FullName;
-                launchPanelCommander(pathL, pathR, panel);
+                pathR = dirR.Parent.FullName;
+                pathL = dirL.Parent.FullName;
+                if (bl)
+                    launchPanelCommander(pathL, pathR, panel);
             }
             else
             {
@@ -470,7 +629,7 @@ namespace NortonCommander
                             dirL = new DirectoryInfo(pathL);
                             for (int i = 0; i < newDirs.Length; i++)
                             {
-                                CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i);
+                                CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i, false);
                             }
 
                         }
@@ -482,12 +641,16 @@ namespace NortonCommander
                     FileInfo[] files = dirL.GetFiles();
                     for (int i = 0; i < files.Length; i++)
                     {
-                        if (files[i].Name.Length <= 8)
+                        if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                            fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                        else if (files[i].Extension == "")
+                            fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                        else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
                             fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
                             " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
                             Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
                         else
-                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Substring(0, 8).PadRight(8) + " " +
+                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
                                     $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
                                     " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
                         if (fileName == list[pos][0])
@@ -498,12 +661,16 @@ namespace NortonCommander
                         }
                     }
                     File.Copy(fileName, dirR.FullName + "\\" + nameFile, true);
-
+                    pathR = dirR.FullName;
+                    pathL = dirL.FullName;
+                    if (bl)
+                        launchPanelCommander(pathL, pathR, panel);
                 }
 
-                pathR = dirR.FullName;
-                pathL = dirL.FullName;
-                launchPanelCommander(pathL, pathR, panel);
+                pathR = dirR.Parent.FullName;
+                pathL = dirL.Parent.FullName;
+                if (bl)
+                    launchPanelCommander(pathL, pathR, panel);
             }
         }
 
@@ -512,6 +679,7 @@ namespace NortonCommander
         {
             string dirName = "";
             string fileName = "";
+            string name = "";
             int count = 0;
             if (panel == "right")
             {
@@ -524,18 +692,145 @@ namespace NortonCommander
                     if (dirName == list[pos][0])
                     {
                         dirName = dirs[i].FullName;
+                        name = dirs[i].Parent.FullName;
                         count++;
                         break;
                     }
                 }
-                if(count>0)
+                if (count > 0)
                 {
-                    DirectoryInfo dir = new DirectoryInfo(pathR);
-                              
-                    CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos);
-                    DellDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos);
-                }
+                    Console.SetCursorPosition(35, 10);
+                    Console.WriteLine(dirName);
+                    Console.SetCursorPosition(35, 11);
+                    Console.Write("New Name: ");
+                    string newName = Console.ReadLine();
+                    if (newName == "")
+                    {
+                        DirectoryInfo dir = new DirectoryInfo(dirR.FullName);
 
+                        CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos, false);
+                        DellDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos, false);
+                    }
+                    else
+                        Directory.Move(dirName, name + "\\" + newName);
+
+                }
+                else
+                {
+                    string nameFile = "";
+                    FileInfo[] files = dirR.GetFiles();
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                            fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                        else if (files[i].Extension == "")
+                            fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                        else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
+                            fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                            Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        else
+                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
+                                    $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        if (fileName == list[pos][0])
+                        {
+                            fileName = files[i].FullName;
+                            nameFile = files[i].Name;
+                            name = files[i].Extension;
+                            break;
+                        }
+                    }
+                    Console.SetCursorPosition(35, 10);
+                    Console.WriteLine(fileName);
+                    Console.SetCursorPosition(35, 11);
+                    Console.Write("New Name: ");
+                    string newName = Console.ReadLine();
+                    if (newName == "")
+                        File.Move(fileName, dirL.FullName + "\\" + nameFile);
+                    else
+                        File.Move(fileName, dirR.FullName + "\\" + newName + name);
+                    pathR = dirR.FullName;
+                    pathL = dirL.FullName;
+                    launchPanelCommander(pathL, pathR, panel);
+                }
+                pathR = dirR.FullName;
+                pathL = dirL.FullName;
+                launchPanelCommander(pathL, pathR, panel);
+            }
+            else
+            {
+                if (list[pos][0] == "..".PadRight(12))
+                    pos++;
+                DirectoryInfo[] dirs = dirL.GetDirectories();
+                for (int i = 0; i < dirs.Length; i++)
+                {
+                    dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
+                    if (dirName == list[pos][0])
+                    {
+                        dirName = dirs[i].FullName;
+                        count++;
+                        break;
+                    }
+                }
+                if (count > 0)
+                {
+                    Console.SetCursorPosition(35, 10);
+                    Console.WriteLine(dirName);
+                    Console.SetCursorPosition(35, 11);
+                    Console.Write("New Name: ");
+                    string newName = Console.ReadLine();
+
+                    if (newName == "")
+                    {
+                        DirectoryInfo dir = new DirectoryInfo(dirL.FullName);
+
+                        CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos, false);
+                        DellDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos, false);
+                    }
+                    else
+                        Directory.Move(dirName, name + "\\" + newName);
+
+                }
+                else
+                {
+                    string nameFile = "";
+                    FileInfo[] files = dirL.GetFiles();
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                            fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                        else if (files[i].Extension == "")
+                            fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                        else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
+                            fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                            Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        else
+                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
+                                    $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                        if (fileName == list[pos][0])
+                        {
+                            fileName = files[i].FullName;
+                            nameFile = files[i].Name;
+                            name = files[i].Extension;
+                            break;
+                        }
+                    }
+                    Console.SetCursorPosition(35, 10);
+                    Console.WriteLine(fileName);
+                    Console.SetCursorPosition(35, 11);
+                    Console.Write("New Name: ");
+                    string newName = Console.ReadLine();
+                    if (newName == "")
+                        File.Move(fileName, dirR.FullName + "\\" + nameFile);
+                    else
+                        File.Move(fileName, dirL.FullName + "\\" + newName + name);
+                    pathR = dirR.FullName;
+                    pathL = dirL.FullName;
+                    launchPanelCommander(pathL, pathR, panel);
+                }
                 pathR = dirR.FullName;
                 pathL = dirL.FullName;
                 launchPanelCommander(pathL, pathR, panel);

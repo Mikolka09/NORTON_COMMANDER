@@ -33,7 +33,7 @@ namespace NortonCommander
                     continue;
                 else if (item.Name.Length <= 12)
                 {
-                    i=0;
+                    i = 0;
                     strD = new string[4];
                     strD[i++] = $"{item.Name}".PadRight(12);
                     strD[i++] = ">SUB-DIR<";
@@ -55,14 +55,36 @@ namespace NortonCommander
             }
             foreach (var item in files)
             {
-               
+
                 if (item.Attributes.HasFlag(FileAttributes.Hidden))
                     continue;
-                else if (item.Name.Length <= 8)
-                { 
+                else if (item.Extension == "" && item.Name.Length <= 8)
+                {
                     i = 0;
                     strF = new string[4];
-                  
+
+                    strF[i++] = $"{item.Name}".PadRight(7) + "     ".PadLeft(5);
+                    strF[i++] = $"{item.Length}".Length <= 9 ? $"{item.Length}".PadLeft(9) : $"{item.Length}".Substring(0, 9);
+                    strF[i++] = $"{item.CreationTimeUtc.Date:dd-MM-yy}";
+                    strF[i++] = $"{item.CreationTimeUtc.ToShortTimeString()}".PadLeft(6);
+                    list.Add(strF);
+                }
+                else if (item.Extension == "")
+                {
+                    i = 0;
+                    strF = new string[4];
+
+                    strF[i++] = $"{item.Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                    strF[i++] = $"{item.Length}".Length <= 9 ? $"{item.Length}".PadLeft(9) : $"{item.Length}".Substring(0, 9);
+                    strF[i++] = $"{item.CreationTimeUtc.Date:dd-MM-yy}";
+                    strF[i++] = $"{item.CreationTimeUtc.ToShortTimeString()}".PadLeft(6);
+                    list.Add(strF);
+                }
+                else if (item.Name.Replace(item.Extension, "").Length <= 8)
+                {
+                    i = 0;
+                    strF = new string[4];
+
                     strF[i++] = item.Extension.Length <= 4 ? $"{item.Name}".Replace(item.Extension, "").PadRight(8) +
                         " " + $"{item.Extension}".Replace(".", "").PadLeft(3) : $"{item.Name}".
                         Replace(item.Extension, "").PadRight(7) + " " + $"{item.Extension}".Replace(".", "").PadLeft(4);
@@ -75,7 +97,7 @@ namespace NortonCommander
                 {
                     i = 0;
                     strF = new string[4];
-                    strF[i++] = item.Extension.Length <= 4 ? item.Name.Substring(0, 8).PadRight(8) + " " + $"{item.Extension}".
+                    strF[i++] = item.Extension.Length <= 4 ? item.Name.Replace(item.Extension, "").Substring(0, 8).PadRight(8) + " " + $"{item.Extension}".
                     Replace(".", "").PadLeft(3) : item.Name.Substring(0, 7).PadRight(7) + " " + $"{item.Extension}".Replace(".", "").PadLeft(4);
                     strF[i++] = $"{item.Length}".Length <= 9 ? $"{item.Length}".PadLeft(9) : $"{item.Length}".Substring(0, 9);
                     strF[i++] = $"{item.CreationTimeUtc.Date:dd-MM-yy}";

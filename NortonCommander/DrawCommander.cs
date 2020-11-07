@@ -15,7 +15,7 @@ namespace NortonCommander
         int y = 22;
         string text = "";
 
-        public void DrawPanelLeft(List<string[]> list, string adress, string panel)
+        public void DrawPanelLeft(List<string[]> list, string adress, string name, string panel)
         {
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.ForegroundColor = ConsoleColor.White;
@@ -28,8 +28,22 @@ namespace NortonCommander
             {
                 if (k == 0)
                 {
+                    int txt = 0;
                     int sizeText = text.Length + 2;
-                    int txt = (sizeWindow / 2) - (sizeText / 2);
+                    if (sizeText > 33)
+                    {
+                        string t = text.Remove(3);
+                        text = t + ".." + "\\" + name;
+                        if (text.Length > 33)
+                        {
+                            name = name.Remove(name.Length - (text.Length - 33));
+                            text = t + ".." + "\\" + name;
+                        }
+                        sizeText = text.Length + 2;
+                        txt = (sizeWindow / 2) - (sizeText / 2);
+                    }
+                    else
+                        txt = (sizeWindow / 2) - (sizeText / 2);
                     Console.SetCursorPosition(x, 0);
                     Console.Write("\u2554");
                     for (int i = 0; i < sizeWindow; i++)
@@ -156,7 +170,7 @@ namespace NortonCommander
                 CommandString(text, panel);
         }
 
-        public void DrawPanelRight(List<string[]> list, string adress, string panel)
+        public void DrawPanelRight(List<string[]> list, string adress, string name, string panel)
         {
             int x = sizeWindow + 2;
             text = adress;
@@ -165,8 +179,22 @@ namespace NortonCommander
             {
                 if (k == 0)
                 {
+                    int txt = 0;
                     int sizeText = text.Length + 2;
-                    int txt = (sizeWindow / 2) - (sizeText / 2);
+                    if (sizeText > 33)
+                    {
+                        string t = text.Remove(3);
+                        text = t + ".." + "\\" + name;
+                        if (text.Length > 33)
+                        {
+                            name = name.Remove(name.Length - (text.Length - 33));
+                            text = t + ".." + "\\" + name;
+                        }
+                        sizeText = text.Length + 2;
+                        txt = (sizeWindow / 2) - (sizeText / 2);
+                    }
+                    else
+                        txt = (sizeWindow / 2) - (sizeText / 2);
                     Console.SetCursorPosition(x, 0);
                     Console.Write("\u2554");
                     for (int i = 0; i < sizeWindow; i++)
@@ -804,6 +832,54 @@ namespace NortonCommander
 
                 }
 
+            }
+        }
+
+        public void DrawWindowDisc()
+        {
+            int x = 32;
+            int y = 7;
+            for (int i = x; i < 47; i++)
+            {
+                for (int j = y; j < 12; j++)
+                {
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    Console.SetCursorPosition(i,j);
+                    Console.WriteLine(" ");
+                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
+        }
+
+        public void DrawWindowDell(string text)
+        {
+            int x = 30;
+            int y = 7;
+            for (int i = x; i < 50; i++)
+            {
+                for (int j = y; j < 12; j++)
+                {
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    Console.SetCursorPosition(i, j);
+                    Console.WriteLine(" ");
+                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Red;
+                if(text == "File Delete!")
+                { 
+                Console.SetCursorPosition(34, 9);
+                Console.WriteLine(text);
+                }
+                else
+                {
+                    Console.SetCursorPosition(32, 9);
+                    Console.WriteLine(text);
+                }
             }
         }
     }
