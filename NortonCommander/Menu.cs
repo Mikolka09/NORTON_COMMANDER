@@ -99,6 +99,9 @@ namespace NortonCommander
                 ConsoleKey consoleKey = Console.ReadKey(true).Key;
                 switch (consoleKey)
                 {
+                    case ConsoleKey.Escape:
+                        perf.launchPanelCommander(dirL.FullName, dirR.FullName, panel, true);
+                        break;
 
                     case ConsoleKey.Enter:
                         perf.OpenDirectory(pos, list, dirR, dirL, panel);
@@ -125,19 +128,25 @@ namespace NortonCommander
                         break;
 
                     case ConsoleKey.F6:
-                        perf.MoveDirectoryFile(list, dirR, dirL, panel, pos);
+                        perf.MoveDirectoryFile(list, dirR, dirL, panel, pos, true);
                         break;
 
                     case ConsoleKey.F7:
-                        perf.CreateDirectory(dirR, dirL, panel);
+                        perf.CreateDirectory(dirR, dirL, panel, true);
                         break;
 
                     case ConsoleKey.F8:
                         perf.DellDirectoryFile(list, dirR, dirL, panel, pos, true);
                         break;
 
+                    case ConsoleKey.F9:
+                        draw.DrawWindowShow("Back Start Page");
+                        Thread.Sleep(1500);
+                        perf.launchPanelCommander("C:\\", "D:\\", panel, true);
+                        break;
+
                     case ConsoleKey.F10:
-                        Environment.Exit(0);
+                        perf.ExitCommander(list, dirR, dirL, panel, pos, true);
                         break;
 
                     case ConsoleKey.UpArrow:
@@ -220,11 +229,73 @@ namespace NortonCommander
                         break;
 
                     case ConsoleKey.Escape:
-                        perf.launchPanelCommander(dirR.FullName, dirL.FullName, panel);
+                        perf.launchPanelCommander(dirL.FullName, dirR.FullName, panel, true);
                         break;
 
                     case ConsoleKey.RightArrow:
                         if (pos < discs.Length - 1)
+                            pos++;
+                        break;
+
+                    case ConsoleKey.LeftArrow:
+                        if (pos > 0)
+                            pos--;
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+        }
+
+
+        public static string GorizontMenu2(string textProcess, string name, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
+        {
+            string[] mas = new string[2];
+            mas[0] = "YES";
+            mas[1] = "NO";
+            Performance perf = new Performance();
+            int x = 34;
+            int y = 12;
+            Console.CursorVisible = false;
+            int pos = 0;
+            while (true)
+            {
+
+                for (int i = 0; i < mas.Length; i++)
+                {
+                    Console.SetCursorPosition(x + i * 5, y);
+                    if (i == pos)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Red;
+                    }
+                    Console.Write(mas[i]);
+                }
+
+                ConsoleKey consoleKey = Console.ReadKey(true).Key;
+                switch (consoleKey)
+                {
+
+                    case ConsoleKey.Enter:
+                      if(pos==0)
+                            return "YES";
+                      else
+                            return "NO";
+                       
+                    case ConsoleKey.Escape:
+                        perf.launchPanelCommander(dirL.FullName, dirR.FullName, panel, true);
+                        break;
+
+                    case ConsoleKey.RightArrow:
+                        if (pos < mas.Length - 1)
                             pos++;
                         break;
 

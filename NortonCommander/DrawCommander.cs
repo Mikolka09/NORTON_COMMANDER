@@ -835,6 +835,27 @@ namespace NortonCommander
             }
         }
 
+        public string SizeCheck(string fullName, string name)
+        {
+            int txt = 0;
+            string text = fullName;
+            int sizeText = fullName.Length+2;
+            if (sizeText > 33)
+            {
+                string t = text.Remove(3);
+                text = t + ".." + "\\" + name;
+                if (text.Length > 33)
+                {
+                    name = name.Remove(name.Length - (text.Length - 33));
+                    return text = t + ".." + "\\" + name;
+                }
+                else
+                     return text = t + ".." + "\\" + name;
+            }
+            else
+               return text;
+        }
+
         public void DrawWindowDisc()
         {
             int x = 32;
@@ -845,7 +866,7 @@ namespace NortonCommander
                 {
                     Console.BackgroundColor = ConsoleColor.White;
                     Console.ForegroundColor = ConsoleColor.DarkBlue;
-                    Console.SetCursorPosition(i,j);
+                    Console.SetCursorPosition(i, j);
                     Console.WriteLine(" ");
                     Console.BackgroundColor = ConsoleColor.DarkBlue;
                     Console.ForegroundColor = ConsoleColor.White;
@@ -853,11 +874,12 @@ namespace NortonCommander
             }
         }
 
-        public void DrawWindowDell(string text)
+        public void DrawWindowShow(string st)
         {
-            int x = 30;
+            int sizeText = st.Length + 2;
+            int x = sizeWindow - sizeText / 2;
             int y = 7;
-            for (int i = x; i < 50; i++)
+            for (int i = x; i < (sizeWindow + sizeText / 2) + 1; i++)
             {
                 for (int j = y; j < 12; j++)
                 {
@@ -868,19 +890,79 @@ namespace NortonCommander
                     Console.BackgroundColor = ConsoleColor.DarkBlue;
                     Console.ForegroundColor = ConsoleColor.White;
                 }
-                Console.BackgroundColor = ConsoleColor.White;
-                Console.ForegroundColor = ConsoleColor.Red;
-                if(text == "File Delete!")
-                { 
-                Console.SetCursorPosition(34, 9);
-                Console.WriteLine(text);
-                }
-                else
+            }
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.SetCursorPosition(x + 1, 9);
+            Console.WriteLine(st);
+        }
+
+        public string DrawWindowProcess(string textProcess, string name, string fullName, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
+        {
+            int x = 0;
+            int y = 7;
+            int xt = 0;
+            string nameP = "Name: " + SizeCheck(fullName, name);
+            int sizeName = nameP.Length + 2;
+            int sizeText = textProcess.Length + 2;
+            if (sizeName >= sizeText)
+            {
+                x = sizeWindow - sizeName / 2;
+                xt = sizeWindow + sizeName / 2;
+            }
+            else
+            {
+                x = sizeWindow - sizeText / 2;
+                xt = sizeWindow + sizeText / 2;
+            }
+
+            for (int i = x; i < xt + 1; i++)
+            {
+                for (int j = y; j < 14; j++)
                 {
-                    Console.SetCursorPosition(32, 9);
-                    Console.WriteLine(text);
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    Console.SetCursorPosition(i, j);
+                    Console.WriteLine(" ");
+                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
             }
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.SetCursorPosition(x + 1, 8);
+            Console.WriteLine(textProcess);
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.SetCursorPosition(x + 1, 10);
+            Console.WriteLine(nameP);
+            return Menu.GorizontMenu2(textProcess, name, dirR, dirL, panel);
+        }
+
+        public void DrawWindowProcessCreate(string textProcess, string name, string fullName)
+        {
+            int x = 0;
+            int y = 7;
+            int xt = 0;
+            int sizeText = textProcess.Length + 6;
+            x = sizeWindow - sizeText / 2;
+            xt = sizeWindow + sizeText / 2;
+            for (int i = x; i < xt + 1; i++)
+            {
+                for (int j = y; j < 14; j++)
+                {
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    Console.SetCursorPosition(i, j);
+                    Console.WriteLine(" ");
+                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.SetCursorPosition(x + 1, 8);
+            Console.WriteLine(textProcess);
         }
     }
 }

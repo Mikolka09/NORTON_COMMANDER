@@ -19,7 +19,7 @@ namespace NortonCommander
         string nameR = "";
         string nameL = "";
 
-        public void launchPanelCommander(string pathL, string pathR, string panel)
+        public void launchPanelCommander(string pathL, string pathR, string panel, bool bp)
         {
             DirectoryInfo dirL = new DirectoryInfo(pathL);
             DirectoryInfo dirR = new DirectoryInfo(pathR);
@@ -30,11 +30,15 @@ namespace NortonCommander
 
             draw.DrawPanelLeft(listL, dirL.FullName, dirL.Name, panel);
             draw.DrawPanelRight(listR, dirR.FullName, dirR.Name, panel);
-            if (panel == "right")
-                Menu.VerticalMenu(listR, dirR, dirL, panel, nameR, nameL);
-            else
-                Menu.VerticalMenu(listL, dirR, dirL, panel, nameR, nameL);
+            if (bp)
+            {
+                if (panel == "right")
+                    Menu.VerticalMenu(listR, dirR, dirL, panel, nameR, nameL);
+                else
+                    Menu.VerticalMenu(listL, dirR, dirL, panel, nameR, nameL);
+            }
         }
+
 
         public void launchPanelCommander()
         {
@@ -51,6 +55,20 @@ namespace NortonCommander
                 Menu.VerticalMenu(listR, dirR, dirL, panel, nameR, nameL);
             else
                 Menu.VerticalMenu(listL, dirR, dirL, panel, nameR, nameL);
+        }
+
+        public void ExitCommander(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos, bool bl)
+        {
+            int sizeText = "Exit Program".Length + 2;
+            int x = 38 - sizeText / 2;
+            int y = 10;
+            draw.DrawWindowProcessCreate("Exit Program", dirR.FullName, nameR);
+            if (Menu.GorizontMenu2("Exit Program", nameR, dirR, dirL, panel) == "YES")
+            {
+                Environment.Exit(0);
+            }
+            else
+                launchPanelCommander(pathL, pathR, panel, true);
         }
 
         public bool isFile(int pos, List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel)
@@ -145,7 +163,7 @@ namespace NortonCommander
                         }
                     }
                 }
-                launchPanelCommander(pathL, pathR, panel);
+                launchPanelCommander(pathL, pathR, panel, true);
             }
             else
             {
@@ -206,7 +224,7 @@ namespace NortonCommander
                 pathR = discs[pos] + ":\\";
             else
                 pathL = discs[pos] + ":\\";
-            launchPanelCommander(pathL, pathR, panel);
+            launchPanelCommander(pathL, pathR, panel, true);
         }
 
         public void TabDirectory(DirectoryInfo dirR, DirectoryInfo dirL, string panel)
@@ -216,46 +234,92 @@ namespace NortonCommander
                 panel = "left";
                 pathL = dirL.FullName;
                 pathR = dirR.FullName;
-                launchPanelCommander(pathL, pathR, panel);
+                launchPanelCommander(pathL, pathR, panel, true);
             }
             else
             {
                 panel = "right";
                 pathL = dirL.FullName;
                 pathR = dirR.FullName;
-                launchPanelCommander(pathL, pathR, panel);
+                launchPanelCommander(pathL, pathR, panel, true);
             }
         }
 
-        public void CreateDirectory(DirectoryInfo dirR, DirectoryInfo dirL, string panel)
+        public void CreateDirectory(DirectoryInfo dirR, DirectoryInfo dirL, string panel, bool bl)
         {
+
+            int sizeText = "Create New Directory".Length + 6;
+            int x = 38 - sizeText / 2;
+            int y = 10;
             if (panel == "right")
             {
+                draw.DrawWindowProcessCreate("Create New Directory", dirR.FullName, nameR);
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.SetCursorPosition(x + 1, y);
                 Console.Write("Name Directory: ");
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Black;
                 nameR = Console.ReadLine();
-                string name = $"{dirR.FullName}" + "\\" + nameR;
-                DirectoryInfo newDir = new DirectoryInfo(name);
-                if (!newDir.Exists)
+                if (Menu.GorizontMenu2("Create New Directory", nameR, dirR, dirL, panel) == "YES")
                 {
-                    newDir.Create();
+                    string name = $"{dirR.FullName}" + "\\" + nameR;
+                    DirectoryInfo newDir = new DirectoryInfo(name);
+                    if (!newDir.Exists)
+                    {
+                        newDir.Create();
+                    }
+                    pathR = newDir.Parent.FullName;
+                    nameR = nameR.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
                 }
-                pathR = newDir.Parent.FullName;
-                nameR = nameR.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
-                launchPanelCommander(pathL, pathR, panel);
+                else
+                    launchPanelCommander(pathL, pathR, panel, true);
+                if (bl)
+                {
+                    pathL = dirL.FullName;
+                    pathR = dirR.FullName;
+                    launchPanelCommander(pathL, pathR, panel, false);
+                    draw.DrawWindowShow("Directory Сreated!");
+                    Thread.Sleep(1500);
+                }
+                pathR = dirR.FullName;
+                pathL = dirL.FullName;
+                launchPanelCommander(pathL, pathR, panel, true);
             }
             else
             {
+                draw.DrawWindowProcessCreate("Create New Directory", dirL.FullName, nameR);
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.SetCursorPosition(x + 1, y);
                 Console.Write("Name Directory: ");
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Black;
                 nameL = Console.ReadLine();
-                string name = $"{dirL.FullName}" + "\\" + nameL;
-                DirectoryInfo newDir = new DirectoryInfo(name);
-                if (!newDir.Exists)
+                if (Menu.GorizontMenu2("Create New Directory", nameR, dirR, dirL, panel) == "YES")
                 {
-                    newDir.Create();
+                    string name = $"{dirL.FullName}" + "\\" + nameL;
+                    DirectoryInfo newDir = new DirectoryInfo(name);
+                    if (!newDir.Exists)
+                    {
+                        newDir.Create();
+                    }
+                    pathL = newDir.Parent.FullName;
+                    nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
                 }
-                pathL = newDir.Parent.FullName;
-                nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
-                launchPanelCommander(pathL, pathR, panel);
+                else
+                    launchPanelCommander(pathL, pathR, panel, true);
+                if (bl)
+                {
+                    pathL = dirL.FullName;
+                    pathR = dirR.FullName;
+                    launchPanelCommander(pathL, pathR, panel, false);
+                    draw.DrawWindowShow("Directory Сreated!");
+                    Thread.Sleep(1500);
+                }
+                pathR = dirR.FullName;
+                pathL = dirL.FullName;
+                launchPanelCommander(pathL, pathR, panel, true);
             }
 
         }
@@ -327,6 +391,8 @@ namespace NortonCommander
         {
             string dirName = "";
             string fileName = "";
+            string process = "Removal Process";
+            string name = "";
             int count = 0;
             if (panel == "right")
             {
@@ -337,6 +403,7 @@ namespace NortonCommander
                     if (dirName == list[pos][0])
                     {
                         dirName = dirs[i].FullName;
+                        name = dirs[i].Name;
                         count++;
                         break;
                     }
@@ -370,18 +437,25 @@ namespace NortonCommander
                         if (fileName == list[pos][0])
                         {
                             fileName = files[i].FullName;
+                            name = files[i].Name;
                             break;
                         }
                     }
-                    File.Delete(fileName);
+                    if (draw.DrawWindowProcess(process, name, fileName, dirR, dirL, panel) == "YES")
+                        File.Delete(fileName);
+                    else
+                        launchPanelCommander(pathL, pathR, panel, true);
                     if (bl)
                     {
-                        draw.DrawWindowDell("File Delete!");
-                        Thread.Sleep(2000);
+                        pathL = dirL.FullName;
+                        pathR = dirR.FullName;
+                        launchPanelCommander(pathL, pathR, panel, false);
+                        draw.DrawWindowShow("File Delete!");
+                        Thread.Sleep(1500);
                     }
                     pathR = dirR.FullName;
                     pathL = dirL.FullName;
-                    launchPanelCommander(pathL, pathR, panel);
+                    launchPanelCommander(pathL, pathR, panel, true);
                 }
             }
             else
@@ -393,6 +467,7 @@ namespace NortonCommander
                     if (dirName == list[pos][0])
                     {
                         dirName = dirs[i].FullName;
+                        name = dirs[i].Name;
                         count++;
                         break;
                     }
@@ -427,39 +502,61 @@ namespace NortonCommander
                         if (fileName == list[pos][0])
                         {
                             fileName = files[i].FullName;
+                            name = files[i].Name;
                             break;
                         }
                     }
-                    File.Delete(fileName);
-                    draw.DrawWindowDell("File Delete!");
-                    Thread.Sleep(2000);
-                    pathR = dirR.FullName;
-                    pathL = dirL.FullName;
-                    launchPanelCommander(pathL, pathR, panel);
+                    if (draw.DrawWindowProcess(process, name, fileName, dirR, dirL, panel) == "YES")
+                        File.Delete(fileName);
+                    else
+                        launchPanelCommander(pathL, pathR, panel, true);
+                    if (bl)
+                    {
+                        pathR = dirR.FullName;
+                        pathL = dirL.FullName;
+                        launchPanelCommander(pathL, pathR, panel, false);
+                        draw.DrawWindowShow("File Delete!");
+                        Thread.Sleep(1500);
+                    }
+                    launchPanelCommander(pathL, pathR, panel, true);
                 }
             }
             try
             {
-                Directory.Delete(dirName, true);
                 if (bl)
                 {
-                    draw.DrawWindowDell("Directory Delete!");
-                    Thread.Sleep(2000);
+                    if (draw.DrawWindowProcess(process, name, dirName, dirR, dirL, panel) == "YES")
+                        Directory.Delete(dirName, true);
+                    else
+                        launchPanelCommander(pathL, pathR, panel, true);
                 }
-                pathR = dirR.FullName;
-                pathL = dirL.FullName;
-                launchPanelCommander(pathL, pathR, panel);
+                else
+                    Directory.Delete(dirName, true);
+                if (bl)
+                {
+                    launchPanelCommander(pathL, pathR, panel, false);
+                    draw.DrawWindowShow("Directory Delete!");
+                    Thread.Sleep(1500);
+                    pathR = dirR.FullName;
+                    pathL = dirL.FullName;
+                    launchPanelCommander(pathL, pathR, panel, true);
+                }
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                draw.DrawWindowShow(ex.Message);
             }
+
         }
 
         public void CopyDirectoryFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos, bool bl)
         {
             string dirName = "";
             string fileName = "";
+            string process = "Copying Process";
+            string nameP = "";
+            string fullName = "";
             int count = 0;
             if (panel == "right")
             {
@@ -471,6 +568,8 @@ namespace NortonCommander
                     dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
                     if (dirName == list[pos][0])
                     {
+                        nameP = dirs[i].Name;
+                        fullName = dirs[i].FullName;
                         count++;
                         break;
                     }
@@ -479,15 +578,42 @@ namespace NortonCommander
                 {
                     if (!Directory.EnumerateFiles(dirR.FullName + "\\" + dirName, "*.*", SearchOption.AllDirectories).Any())
                     {
-                        nameL = dirName;
-                        string name = $"{dirL.FullName}" + "\\" + nameL;
-                        DirectoryInfo newDir = new DirectoryInfo(name);
-                        if (!newDir.Exists)
+                        if (!bl)
                         {
-                            newDir.Create();
+                            nameL = dirName;
+                            string name = $"{dirL.FullName}" + "\\" + nameL;
+                            DirectoryInfo newDir = new DirectoryInfo(name);
+                            if (!newDir.Exists)
+                            {
+                                newDir.Create();
+                            }
+                            pathL = newDir.FullName;
+                            pathR = dirR.FullName;
+                            nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
                         }
-                        pathL = newDir.FullName;
-                        nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                        else if (draw.DrawWindowProcess(process, nameP, fullName, dirR, dirL, panel) == "YES")
+                        {
+                            nameL = dirName;
+                            string name = $"{dirL.FullName}" + "\\" + nameL;
+                            DirectoryInfo newDir = new DirectoryInfo(name);
+                            if (!newDir.Exists)
+                            {
+                                newDir.Create();
+                            }
+                            pathL = newDir.FullName;
+                            pathR = dirR.FullName;
+                            nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                        }
+                        else
+                            launchPanelCommander(pathL, pathR, panel, true);
+                        if (bl)
+                        {
+                            pathL = dirL.FullName;
+                            pathR = dirR.FullName;
+                            launchPanelCommander(pathL, pathR, panel, false);
+                            draw.DrawWindowShow("Directory Copying!");
+                            Thread.Sleep(1500);
+                        }
                     }
                     else
                     {
@@ -498,34 +624,77 @@ namespace NortonCommander
                             {
                                 pathR = dirs[i].FullName;
                                 nameL = dirs[i].Name;
+                                nameP = nameL;
                                 break;
                             }
                         }
-                        string name = $"{dirL.FullName}" + "\\" + nameL;
-                        DirectoryInfo newDir = new DirectoryInfo(name);
-                        if (!newDir.Exists)
+                        if (!bl)
                         {
-                            newDir.Create();
-                        }
-                        pathL = newDir.FullName;
-                        nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
-                        DirectoryInfo dir = new DirectoryInfo(pathR);
-                        FileInfo[] files = dir.GetFiles();
-                        for (int i = 0; i < files.Length; i++)
-                        {
-                            FileInfo file = new FileInfo(files[i].FullName);
-                            file.CopyTo(pathL + "\\" + files[i].Name, true);
-                        }
-                        DirectoryInfo[] newDirs = dir.GetDirectories();
-                        if (newDirs.Length > 0)
-                        {
-                            dirR = new DirectoryInfo(pathR);
-                            dirL = new DirectoryInfo(pathL);
-                            for (int i = 0; i < newDirs.Length; i++)
+                            string name = $"{dirL.FullName}" + "\\" + nameL;
+                            DirectoryInfo newDir = new DirectoryInfo(name);
+                            if (!newDir.Exists)
                             {
-                                CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i, false);
+                                newDir.Create();
                             }
+                            pathL = newDir.FullName;
+                            nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                            DirectoryInfo dir = new DirectoryInfo(pathR);
+                            FileInfo[] files = dir.GetFiles();
+                            for (int i = 0; i < files.Length; i++)
+                            {
+                                FileInfo file = new FileInfo(files[i].FullName);
+                                file.CopyTo(pathL + "\\" + files[i].Name, true);
+                            }
+                            DirectoryInfo[] newDirs = dir.GetDirectories();
+                            if (newDirs.Length > 0)
+                            {
+                                dirR = new DirectoryInfo(pathR);
+                                dirL = new DirectoryInfo(pathL);
+                                for (int i = 0; i < newDirs.Length; i++)
+                                {
+                                    CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i, false);
+                                }
 
+                            }
+                        }
+                        else if (draw.DrawWindowProcess(process, nameP, pathR, dirR, dirL, panel) == "YES")
+                        {
+                            string name = $"{dirL.FullName}" + "\\" + nameL;
+                            DirectoryInfo newDir = new DirectoryInfo(name);
+                            if (!newDir.Exists)
+                            {
+                                newDir.Create();
+                            }
+                            pathL = newDir.FullName;
+                            nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                            DirectoryInfo dir = new DirectoryInfo(pathR);
+                            FileInfo[] files = dir.GetFiles();
+                            for (int i = 0; i < files.Length; i++)
+                            {
+                                FileInfo file = new FileInfo(files[i].FullName);
+                                file.CopyTo(pathL + "\\" + files[i].Name, true);
+                            }
+                            DirectoryInfo[] newDirs = dir.GetDirectories();
+                            if (newDirs.Length > 0)
+                            {
+                                dirR = new DirectoryInfo(pathR);
+                                dirL = new DirectoryInfo(pathL);
+                                for (int i = 0; i < newDirs.Length; i++)
+                                {
+                                    CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i, false);
+                                }
+
+                            }
+                        }
+                        else
+                            launchPanelCommander(pathL, pathR, panel, true);
+                        if (bl)
+                        {
+                            pathL = dirL.FullName;
+                            pathR = dirR.FullName;
+                            launchPanelCommander(pathL, pathR, panel, false);
+                            draw.DrawWindowShow("Directory Copying!");
+                            Thread.Sleep(1500);
                         }
                     }
                 }
@@ -554,18 +723,40 @@ namespace NortonCommander
                             break;
                         }
                     }
-                    File.Copy(fileName, dirL.FullName + "\\" + nameFile, true);
-                    pathR = dirR.FullName;
-                    pathL = dirL.FullName;
-                    if (bl)
-                        launchPanelCommander(pathL, pathR, panel);
+                    if (draw.DrawWindowProcess(process, nameFile, fileName, dirR, dirL, panel) == "YES")
+                    {
+                        File.Copy(fileName, dirL.FullName + "\\" + nameFile, true);
+                        pathR = dirR.FullName;
+                        pathL = dirL.FullName;
+                        if (bl)
+                        {
+                            pathL = dirL.FullName;
+                            pathR = dirR.FullName;
+                            launchPanelCommander(pathL, pathR, panel, false);
+                            draw.DrawWindowShow("File Copying!");
+                            Thread.Sleep(1500);
+                        }
+                        pathL = dirL.FullName;
+                        pathR = dirR.FullName;
+                        launchPanelCommander(pathL, pathR, panel, true);
+                    }
+                    else
+                        launchPanelCommander(pathL, pathR, panel, true);
 
                 }
-
-                pathR = dirR.Parent.FullName;
-                pathL = dirL.Parent.FullName;
+                if (dirR.FullName == dirR.Root.FullName || dirL.FullName == dirL.Root.FullName)
+                {
+                    pathR = dirR.FullName;
+                    pathL = dirL.FullName;
+                }
+                else
+                {
+                    pathR = dirR.Parent.FullName;
+                    pathL = dirL.Parent.FullName;
+                }
                 if (bl)
-                    launchPanelCommander(pathL, pathR, panel);
+                    launchPanelCommander(pathL, pathR, panel, true);
+
             }
             else
             {
@@ -577,6 +768,8 @@ namespace NortonCommander
                     dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
                     if (dirName == list[pos][0])
                     {
+                        nameP = dirs[i].Name;
+                        fullName = dirs[i].FullName;
                         count++;
                         break;
                     }
@@ -585,15 +778,43 @@ namespace NortonCommander
                 {
                     if (!Directory.EnumerateFiles(dirL.FullName + "\\" + dirName, "*.*", SearchOption.AllDirectories).Any())
                     {
-                        nameL = dirName;
-                        string name = $"{dirR.FullName}" + "\\" + nameL;
-                        DirectoryInfo newDir = new DirectoryInfo(name);
-                        if (!newDir.Exists)
+                        if (!bl)
                         {
-                            newDir.Create();
+                            nameR = dirName;
+                            string name = $"{dirR.FullName}" + "\\" + nameR;
+                            DirectoryInfo newDir = new DirectoryInfo(name);
+                            if (!newDir.Exists)
+                            {
+                                newDir.Create();
+                            }
+                            pathR = newDir.FullName;
+                            pathL = dirR.FullName;
+                            nameR = nameR.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
                         }
-                        pathR = newDir.FullName;
-                        nameR = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
+                        else if (draw.DrawWindowProcess(process, nameP, fullName, dirR, dirL, panel) == "YES")
+                        {
+                            nameR = dirName;
+                            string name = $"{dirR.FullName}" + "\\" + nameR;
+                            DirectoryInfo newDir = new DirectoryInfo(name);
+                            if (!newDir.Exists)
+                            {
+                                newDir.Create();
+                            }
+                            pathR = newDir.FullName;
+                            pathL = dirR.FullName;
+                            nameR = nameR.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
+                        }
+
+                        else
+                            launchPanelCommander(pathL, pathR, panel, true);
+                        if (bl)
+                        {
+                            pathL = dirL.FullName;
+                            pathR = dirR.FullName;
+                            launchPanelCommander(pathL, pathR, panel, false);
+                            draw.DrawWindowShow("Directory Copying!");
+                            Thread.Sleep(1500);
+                        }
                     }
                     else
                     {
@@ -604,34 +825,77 @@ namespace NortonCommander
                             {
                                 pathL = dirs[i].FullName;
                                 nameR = dirs[i].Name;
+                                nameP = nameR;
                                 break;
                             }
                         }
-                        string name = $"{dirR.FullName}" + "\\" + nameR;
-                        DirectoryInfo newDir = new DirectoryInfo(name);
-                        if (!newDir.Exists)
+                        if (!bl)
                         {
-                            newDir.Create();
-                        }
-                        pathR = newDir.FullName;
-                        nameR = nameR.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
-                        DirectoryInfo dir = new DirectoryInfo(pathL);
-                        FileInfo[] files = dir.GetFiles();
-                        for (int i = 0; i < files.Length; i++)
-                        {
-                            FileInfo file = new FileInfo(files[i].FullName);
-                            file.CopyTo(pathR + "\\" + files[i].Name, true);
-                        }
-                        DirectoryInfo[] newDirs = dir.GetDirectories();
-                        if (newDirs.Length > 0)
-                        {
-                            dirR = new DirectoryInfo(pathR);
-                            dirL = new DirectoryInfo(pathL);
-                            for (int i = 0; i < newDirs.Length; i++)
+                            string name = $"{dirR.FullName}" + "\\" + nameR;
+                            DirectoryInfo newDir = new DirectoryInfo(name);
+                            if (!newDir.Exists)
                             {
-                                CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i, false);
+                                newDir.Create();
                             }
+                            pathR = newDir.FullName;
+                            nameR = nameR.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
+                            DirectoryInfo dir = new DirectoryInfo(pathL);
+                            FileInfo[] files = dir.GetFiles();
+                            for (int i = 0; i < files.Length; i++)
+                            {
+                                FileInfo file = new FileInfo(files[i].FullName);
+                                file.CopyTo(pathR + "\\" + files[i].Name, true);
+                            }
+                            DirectoryInfo[] newDirs = dir.GetDirectories();
+                            if (newDirs.Length > 0)
+                            {
+                                dirR = new DirectoryInfo(pathR);
+                                dirL = new DirectoryInfo(pathL);
+                                for (int i = 0; i < newDirs.Length; i++)
+                                {
+                                    CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i, false);
+                                }
 
+                            }
+                        }
+                        else if (draw.DrawWindowProcess(process, nameP, pathL, dirR, dirL, panel) == "YES")
+                        {
+                            string name = $"{dirR.FullName}" + "\\" + nameR;
+                            DirectoryInfo newDir = new DirectoryInfo(name);
+                            if (!newDir.Exists)
+                            {
+                                newDir.Create();
+                            }
+                            pathR = newDir.FullName;
+                            nameR = nameR.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
+                            DirectoryInfo dir = new DirectoryInfo(pathL);
+                            FileInfo[] files = dir.GetFiles();
+                            for (int i = 0; i < files.Length; i++)
+                            {
+                                FileInfo file = new FileInfo(files[i].FullName);
+                                file.CopyTo(pathR + "\\" + files[i].Name, true);
+                            }
+                            DirectoryInfo[] newDirs = dir.GetDirectories();
+                            if (newDirs.Length > 0)
+                            {
+                                dirR = new DirectoryInfo(pathR);
+                                dirL = new DirectoryInfo(pathL);
+                                for (int i = 0; i < newDirs.Length; i++)
+                                {
+                                    CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, i, false);
+                                }
+
+                            }
+                        }
+                        else
+                            launchPanelCommander(pathL, pathR, panel, true);
+                        if (bl)
+                        {
+                            pathL = dirL.FullName;
+                            pathR = dirR.FullName;
+                            launchPanelCommander(pathL, pathR, panel, false);
+                            draw.DrawWindowShow("Directory Copying!");
+                            Thread.Sleep(1500);
                         }
                     }
                 }
@@ -660,181 +924,212 @@ namespace NortonCommander
                             break;
                         }
                     }
-                    File.Copy(fileName, dirR.FullName + "\\" + nameFile, true);
-                    pathR = dirR.FullName;
-                    pathL = dirL.FullName;
-                    if (bl)
-                        launchPanelCommander(pathL, pathR, panel);
+                    if (draw.DrawWindowProcess(process, nameFile, fileName, dirR, dirL, panel) == "YES")
+                    {
+                        File.Copy(fileName, dirR.FullName + "\\" + nameFile, true);
+                        pathR = dirR.FullName;
+                        pathL = dirL.FullName;
+                        if (bl)
+                        {
+                            pathL = dirL.FullName;
+                            pathR = dirR.FullName;
+                            launchPanelCommander(pathL, pathR, panel, false);
+                            draw.DrawWindowShow("File Copying!");
+                            Thread.Sleep(1500);
+                        }
+                        pathL = dirL.FullName;
+                        pathR = dirR.FullName;
+                        launchPanelCommander(pathL, pathR, panel, true);
+                    }
+                    else
+                        launchPanelCommander(pathL, pathR, panel, true);
                 }
 
-                pathR = dirR.Parent.FullName;
-                pathL = dirL.Parent.FullName;
+                if (dirR.FullName == dirR.Root.FullName || dirL.FullName == dirL.Root.FullName)
+                {
+                    pathR = dirR.FullName;
+                    pathL = dirL.FullName;
+                }
+                else
+                {
+                    pathR = dirR.Parent.FullName;
+                    pathL = dirL.Parent.FullName;
+                }
                 if (bl)
-                    launchPanelCommander(pathL, pathR, panel);
+                    launchPanelCommander(pathL, pathR, panel, true);
             }
         }
 
 
-        public void MoveDirectoryFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos)
+        public void MoveDirectoryFile(List<string[]> list, DirectoryInfo dirR, DirectoryInfo dirL, string panel, int pos, bool bl)
         {
+
+            int sizeText = "Move \\ Rename".Length + 6;
+            int x = 38 - sizeText / 2;
+            int y = 10;
             string dirName = "";
             string fileName = "";
             string name = "";
+            string nameP = "";
             int count = 0;
+            DirectoryInfo[] dirs;
             if (panel == "right")
+                dirs = dirR.GetDirectories();
+            else
+                dirs = dirL.GetDirectories();
+            if (list[pos][0] == "..".PadRight(12))
+                pos++;
+            for (int i = 0; i < dirs.Length; i++)
             {
-                if (list[pos][0] == "..".PadRight(12))
-                    pos++;
-                DirectoryInfo[] dirs = dirR.GetDirectories();
-                for (int i = 0; i < dirs.Length; i++)
+                dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
+                if (dirName == list[pos][0])
                 {
-                    dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
-                    if (dirName == list[pos][0])
-                    {
-                        dirName = dirs[i].FullName;
-                        name = dirs[i].Parent.FullName;
-                        count++;
-                        break;
-                    }
+                    dirName = dirs[i].FullName;
+                    name = dirs[i].Parent.FullName;
+                    nameP = dirs[i].Name;
+                    count++;
+                    break;
                 }
-                if (count > 0)
+            }
+            if (count > 0)
+            {
+                draw.DrawWindowProcessCreate("Move \\ Rename", nameP, dirName);
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.SetCursorPosition(x + 1, 10);
+                Console.WriteLine(dirName);
+                Console.SetCursorPosition(x + 1, 11);
+                Console.Write("New Name: ");
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Black;
+                string newName = Console.ReadLine();
+                if (Menu.GorizontMenu2("Move \\ Rename", name, dirR, dirL, panel) == "YES")
                 {
-                    Console.SetCursorPosition(35, 10);
-                    Console.WriteLine(dirName);
-                    Console.SetCursorPosition(35, 11);
-                    Console.Write("New Name: ");
-                    string newName = Console.ReadLine();
                     if (newName == "")
                     {
-                        DirectoryInfo dir = new DirectoryInfo(dirR.FullName);
-
+                        DirectoryInfo dir;
+                        if (panel == "right")
+                            dir = new DirectoryInfo(dirR.FullName);
+                        else
+                            dir = new DirectoryInfo(dirL.FullName);
                         CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos, false);
                         DellDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos, false);
+                        if (bl)
+                        {
+                            pathL = dirL.FullName;
+                            pathR = dirR.FullName;
+                            launchPanelCommander(pathL, pathR, panel, false);
+                            draw.DrawWindowShow("Directory Moved!");
+                            Thread.Sleep(1500);
+                        }
+                        pathR = dirR.FullName;
+                        pathL = dirL.FullName;
+                        launchPanelCommander(pathL, pathR, panel, true);
+
                     }
                     else
+                    {
                         Directory.Move(dirName, name + "\\" + newName);
-
+                        if (bl)
+                        {
+                            pathL = dirL.FullName;
+                            pathR = dirR.FullName;
+                            launchPanelCommander(pathL, pathR, panel, false);
+                            draw.DrawWindowShow("Directory Renamed!");
+                            Thread.Sleep(1500);
+                        }
+                        pathR = dirR.FullName;
+                        pathL = dirL.FullName;
+                        launchPanelCommander(pathL, pathR, panel, true);
+                    }
                 }
                 else
-                {
-                    string nameFile = "";
-                    FileInfo[] files = dirR.GetFiles();
-                    for (int i = 0; i < files.Length; i++)
-                    {
-                        if (files[i].Extension == "" && files[i].Name.Length <= 8)
-                            fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
-                        else if (files[i].Extension == "")
-                            fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
-                        else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
-                            fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
-                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
-                            Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
-                        else
-                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
-                                    $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
-                                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
-                        if (fileName == list[pos][0])
-                        {
-                            fileName = files[i].FullName;
-                            nameFile = files[i].Name;
-                            name = files[i].Extension;
-                            break;
-                        }
-                    }
-                    Console.SetCursorPosition(35, 10);
-                    Console.WriteLine(fileName);
-                    Console.SetCursorPosition(35, 11);
-                    Console.Write("New Name: ");
-                    string newName = Console.ReadLine();
-                    if (newName == "")
-                        File.Move(fileName, dirL.FullName + "\\" + nameFile);
-                    else
-                        File.Move(fileName, dirR.FullName + "\\" + newName + name);
-                    pathR = dirR.FullName;
-                    pathL = dirL.FullName;
-                    launchPanelCommander(pathL, pathR, panel);
-                }
-                pathR = dirR.FullName;
-                pathL = dirL.FullName;
-                launchPanelCommander(pathL, pathR, panel);
+                    launchPanelCommander(pathL, pathR, panel, true);
             }
             else
             {
-                if (list[pos][0] == "..".PadRight(12))
-                    pos++;
-                DirectoryInfo[] dirs = dirL.GetDirectories();
-                for (int i = 0; i < dirs.Length; i++)
+                string nameFile = "";
+                FileInfo[] files;
+                if (panel == "right")
+                    files = dirR.GetFiles();
+                else
+                    files = dirL.GetFiles();
+                for (int i = 0; i < files.Length; i++)
                 {
-                    dirName = dirs[i].Name.Length <= 12 ? dirs[i].Name.PadRight(12) : dirs[i].Name.Substring(0, 12);
-                    if (dirName == list[pos][0])
+                    if (files[i].Extension == "" && files[i].Name.Length <= 8)
+                        fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
+                    else if (files[i].Extension == "")
+                        fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
+                    else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
+                        fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
+                        " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
+                        Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                    else
+                        fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
+                                $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
+                                " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
+                    if (fileName == list[pos][0])
                     {
-                        dirName = dirs[i].FullName;
-                        count++;
+                        fileName = files[i].FullName;
+                        nameFile = files[i].Name;
+                        name = files[i].Extension;
                         break;
                     }
                 }
-                if (count > 0)
+                draw.DrawWindowProcessCreate("Move \\ Rename", nameFile, fileName);
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.SetCursorPosition(x + 1, 10);
+                Console.WriteLine(nameFile);
+                Console.SetCursorPosition(x + 1, 11);
+                Console.Write("New Name: ");
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Black;
+                string newName = Console.ReadLine();
+                if (Menu.GorizontMenu2("Move \\ Rename", fileName, dirR, dirL, panel) == "YES")
                 {
-                    Console.SetCursorPosition(35, 10);
-                    Console.WriteLine(dirName);
-                    Console.SetCursorPosition(35, 11);
-                    Console.Write("New Name: ");
-                    string newName = Console.ReadLine();
-
                     if (newName == "")
                     {
-                        DirectoryInfo dir = new DirectoryInfo(dirL.FullName);
+                        if (panel == "right")
+                            File.Move(fileName, dirL.FullName + "\\" + nameFile);
+                        else
+                            File.Move(fileName, dirR.FullName + "\\" + nameFile);
 
-                        CopyDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos, false);
-                        DellDirectoryFile(panels.ConvertDirToList(dir), dirR, dirL, panel, pos, false);
+                        if (bl)
+                        {
+                            pathR = dirR.FullName;
+                            pathL = dirL.FullName;
+                            launchPanelCommander(pathL, pathR, panel, false);
+                            draw.DrawWindowShow("File Moved!");
+                            Thread.Sleep(1500);
+                        }
+                        pathR = dirR.FullName;
+                        pathL = dirL.FullName;
+                        launchPanelCommander(pathL, pathR, panel, true);
                     }
                     else
-                        Directory.Move(dirName, name + "\\" + newName);
-
+                    {
+                        if (panel == "right")
+                            File.Move(fileName, dirR.FullName + "\\" + newName + name);
+                        else
+                            File.Move(fileName, dirL.FullName + "\\" + newName + name);
+                        if (bl)
+                        {
+                            pathR = dirR.FullName;
+                            pathL = dirL.FullName;
+                            launchPanelCommander(pathL, pathR, panel, false);
+                            draw.DrawWindowShow("File Renamed!");
+                            Thread.Sleep(1500);
+                        }
+                        pathR = dirR.FullName;
+                        pathL = dirL.FullName;
+                        launchPanelCommander(pathL, pathR, panel, true);
+                    }
                 }
                 else
-                {
-                    string nameFile = "";
-                    FileInfo[] files = dirL.GetFiles();
-                    for (int i = 0; i < files.Length; i++)
-                    {
-                        if (files[i].Extension == "" && files[i].Name.Length <= 8)
-                            fileName = $"{files[i].Name}".PadRight(7) + "     ".PadLeft(5);
-                        else if (files[i].Extension == "")
-                            fileName = $"{files[i].Name}".Substring(0, 7).PadRight(8) + " ".PadLeft(4);
-                        else if (files[i].Name.Replace(files[i].Extension, "").Length <= 8)
-                            fileName = files[i].Extension.Length <= 4 ? $"{files[i].Name}".Replace(files[i].Extension, "").PadRight(8) +
-                            " " + $"{files[i].Extension}".Replace(".", "").PadLeft(3) : $"{files[i].Name}".
-                            Replace(files[i].Extension, "").PadRight(7) + " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
-                        else
-                            fileName = files[i].Extension.Length <= 4 ? files[i].Name.Replace(files[i].Extension, "").Substring(0, 8).PadRight(8) + " " +
-                                    $"{files[i].Extension}".Replace(".", "").PadLeft(3) : files[i].Name.Substring(0, 7).PadRight(7) +
-                                    " " + $"{files[i].Extension}".Replace(".", "").PadLeft(4);
-                        if (fileName == list[pos][0])
-                        {
-                            fileName = files[i].FullName;
-                            nameFile = files[i].Name;
-                            name = files[i].Extension;
-                            break;
-                        }
-                    }
-                    Console.SetCursorPosition(35, 10);
-                    Console.WriteLine(fileName);
-                    Console.SetCursorPosition(35, 11);
-                    Console.Write("New Name: ");
-                    string newName = Console.ReadLine();
-                    if (newName == "")
-                        File.Move(fileName, dirR.FullName + "\\" + nameFile);
-                    else
-                        File.Move(fileName, dirL.FullName + "\\" + newName + name);
-                    pathR = dirR.FullName;
-                    pathL = dirL.FullName;
-                    launchPanelCommander(pathL, pathR, panel);
-                }
-                pathR = dirR.FullName;
-                pathL = dirL.FullName;
-                launchPanelCommander(pathL, pathR, panel);
+                    launchPanelCommander(pathL, pathR, panel, true);
             }
+
         }
     }
 }
