@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -109,6 +110,10 @@ namespace NortonCommander
 
                     case ConsoleKey.Tab:
                         perf.TabDirectory(dirR, dirL, panel);
+                        break;
+
+                    case ConsoleKey.F1:
+                        Process.Start("Notepad.exe", "help.txt");
                         break;
 
                     case ConsoleKey.F2:
