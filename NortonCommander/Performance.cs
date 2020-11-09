@@ -273,7 +273,11 @@ namespace NortonCommander
                     nameR = nameR.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
                 }
                 else
+                {
+                    pathL = dirL.FullName;
+                    pathR = dirR.FullName;
                     launchPanelCommander(pathL, pathR, panel, true);
+                }
                 if (bl)
                 {
                     pathL = dirL.FullName;
@@ -308,7 +312,11 @@ namespace NortonCommander
                     nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
                 }
                 else
+                {
+                    pathL = dirL.FullName;
+                    pathR = dirR.FullName;
                     launchPanelCommander(pathL, pathR, panel, true);
+                }
                 if (bl)
                 {
                     pathL = dirL.FullName;
@@ -444,7 +452,11 @@ namespace NortonCommander
                     if (draw.DrawWindowProcess(process, name, fileName, dirR, dirL, panel) == "YES")
                         File.Delete(fileName);
                     else
+                    {
+                        pathL = dirL.FullName;
+                        pathR = dirR.FullName;
                         launchPanelCommander(pathL, pathR, panel, true);
+                    }
                     if (bl)
                     {
                         pathL = dirL.FullName;
@@ -509,7 +521,11 @@ namespace NortonCommander
                     if (draw.DrawWindowProcess(process, name, fileName, dirR, dirL, panel) == "YES")
                         File.Delete(fileName);
                     else
+                    {
+                        pathL = dirL.FullName;
+                        pathR = dirR.FullName;
                         launchPanelCommander(pathL, pathR, panel, true);
+                    }
                     if (bl)
                     {
                         pathR = dirR.FullName;
@@ -528,12 +544,18 @@ namespace NortonCommander
                     if (draw.DrawWindowProcess(process, name, dirName, dirR, dirL, panel) == "YES")
                         Directory.Delete(dirName, true);
                     else
+                    {
+                        pathL = dirL.FullName;
+                        pathR = dirR.FullName;
                         launchPanelCommander(pathL, pathR, panel, true);
+                    }
                 }
                 else
                     Directory.Delete(dirName, true);
                 if (bl)
                 {
+                    pathR = dirR.FullName;
+                    pathL = dirL.FullName;
                     launchPanelCommander(pathL, pathR, panel, false);
                     draw.DrawWindowShow("Directory Delete!");
                     Thread.Sleep(1500);
@@ -605,7 +627,11 @@ namespace NortonCommander
                             nameL = nameL.Length <= 12 ? dirL.Name.PadRight(12) : dirL.Name.Substring(0, 12);
                         }
                         else
+                        {
+                            pathL = dirL.FullName;
+                            pathR = dirR.FullName;
                             launchPanelCommander(pathL, pathR, panel, true);
+                        }
                         if (bl)
                         {
                             pathL = dirL.FullName;
@@ -687,11 +713,13 @@ namespace NortonCommander
                             }
                         }
                         else
-                            launchPanelCommander(pathL, pathR, panel, true);
-                        if (bl)
                         {
                             pathL = dirL.FullName;
                             pathR = dirR.FullName;
+                            launchPanelCommander(pathL, pathR, panel, true);
+                        }
+                        if (bl)
+                        {
                             launchPanelCommander(pathL, pathR, panel, false);
                             draw.DrawWindowShow("Directory Copying!");
                             Thread.Sleep(1500);
@@ -741,7 +769,11 @@ namespace NortonCommander
                         launchPanelCommander(pathL, pathR, panel, true);
                     }
                     else
+                    {
+                        pathL = dirL.FullName;
+                        pathR = dirR.FullName;
                         launchPanelCommander(pathL, pathR, panel, true);
+                    }
 
                 }
                 if (dirR.FullName == dirR.Root.FullName || dirL.FullName == dirL.Root.FullName)
@@ -804,9 +836,12 @@ namespace NortonCommander
                             pathL = dirR.FullName;
                             nameR = nameR.Length <= 12 ? dirR.Name.PadRight(12) : dirR.Name.Substring(0, 12);
                         }
-
                         else
+                        {
+                            pathL = dirL.FullName;
+                            pathR = dirR.FullName;
                             launchPanelCommander(pathL, pathR, panel, true);
+                        }
                         if (bl)
                         {
                             pathL = dirL.FullName;
@@ -888,11 +923,13 @@ namespace NortonCommander
                             }
                         }
                         else
-                            launchPanelCommander(pathL, pathR, panel, true);
-                        if (bl)
                         {
                             pathL = dirL.FullName;
                             pathR = dirR.FullName;
+                            launchPanelCommander(pathL, pathR, panel, true);
+                        }
+                        if (bl)
+                        {
                             launchPanelCommander(pathL, pathR, panel, false);
                             draw.DrawWindowShow("Directory Copying!");
                             Thread.Sleep(1500);
@@ -942,7 +979,11 @@ namespace NortonCommander
                         launchPanelCommander(pathL, pathR, panel, true);
                     }
                     else
+                    {
+                        pathL = dirL.FullName;
+                        pathR = dirR.FullName;
                         launchPanelCommander(pathL, pathR, panel, true);
+                    }
                 }
 
                 if (dirR.FullName == dirR.Root.FullName || dirL.FullName == dirL.Root.FullName)
@@ -1044,7 +1085,11 @@ namespace NortonCommander
                     }
                 }
                 else
+                {
+                    pathL = dirL.FullName;
+                    pathR = dirR.FullName;
                     launchPanelCommander(pathL, pathR, panel, true);
+                }
             }
             else
             {
@@ -1127,7 +1172,11 @@ namespace NortonCommander
                     }
                 }
                 else
+                {
+                    pathL = dirL.FullName;
+                    pathR = dirR.FullName;
                     launchPanelCommander(pathL, pathR, panel, true);
+                }
             }
 
         }

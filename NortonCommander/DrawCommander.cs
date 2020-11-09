@@ -647,199 +647,10 @@ namespace NortonCommander
             }
         }
 
-        public void WriteLongListDown(List<string[]> list, int i, string panel)
-        {
-            int x = 0;
-            int y = 2;
-            if (panel == "left")
-            {
-
-                int k = (i - 17) + 1;
-                int p = 0;
-                while (k != p)
-                {
-                    p = k;
-                    for (int j = p; j < i + 1; j++)
-                    {
-                        if (j == i)
-                        {
-                            Console.BackgroundColor = ConsoleColor.White;
-                            Console.ForegroundColor = ConsoleColor.DarkBlue;
-                            Console.SetCursorPosition(x + 1, y + j - p);
-                            Console.WriteLine(list[j][0]);
-                            Console.BackgroundColor = ConsoleColor.DarkBlue;
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.SetCursorPosition(x + 14, y + j - p);
-                            Console.WriteLine(list[j][1]);
-                            Console.SetCursorPosition(x + 24, y + j - p);
-                            Console.WriteLine(list[j][2]);
-                            Console.SetCursorPosition(x + 33, y + j - p);
-                            Console.WriteLine(list[j][3]);
-                        }
-
-                        else
-                        {
-                            Console.BackgroundColor = ConsoleColor.DarkBlue;
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.SetCursorPosition(x + 1, y + j - p);
-                            Console.WriteLine(list[j][0]);
-                            Console.SetCursorPosition(x + 14, y + j - p);
-                            Console.WriteLine(list[j][1]);
-                            Console.SetCursorPosition(x + 24, y + j - p);
-                            Console.WriteLine(list[j][2]);
-                            Console.SetCursorPosition(x + 33, y + j - p);
-                            Console.WriteLine(list[j][3]);
-                        }
-
-                    }
-
-                }
-            }
-            else
-            {
-
-                int k = (i - 17) + 1;
-                int p = 0;
-                x = sizeWindow + 2;
-                while (k != p)
-                {
-                    p = k;
-                    for (int j = p; j < i + 1; j++)
-                    {
-                        if (j == i)
-                        {
-                            Console.BackgroundColor = ConsoleColor.White;
-                            Console.ForegroundColor = ConsoleColor.DarkBlue;
-                            Console.SetCursorPosition(x + 1, y + j - p);
-                            Console.WriteLine(list[j][0]);
-                            Console.BackgroundColor = ConsoleColor.DarkBlue;
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.SetCursorPosition(x + 14, y + j - p);
-                            Console.WriteLine(list[j][1]);
-                            Console.SetCursorPosition(x + 24, y + j - p);
-                            Console.WriteLine(list[j][2]);
-                            Console.SetCursorPosition(x + 33, y + j - p);
-                            Console.WriteLine(list[j][3]);
-                        }
-                        else
-                        {
-                            Console.BackgroundColor = ConsoleColor.DarkBlue;
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.SetCursorPosition(x + 1, y + j - p);
-                            Console.WriteLine(list[j][0]);
-                            Console.SetCursorPosition(x + 14, y + j - p);
-                            Console.WriteLine(list[j][1]);
-                            Console.SetCursorPosition(x + 24, y + j - p);
-                            Console.WriteLine(list[j][2]);
-                            Console.SetCursorPosition(x + 33, y + j - p);
-                            Console.WriteLine(list[j][3]);
-                        }
-
-                    }
-
-                }
-
-            }
-        }
-
-        public void WriteLongListUp(List<string[]> list, int i, string panel)
-        {
-            int x = 0;
-            int y = 2;
-            if (panel == "left")
-            {
-
-                int k = (i - 17) + 1;
-                int p = 0;
-                while (k != p)
-                {
-                    p = k;
-                    for (int j = p; j < i + 1; j++)
-                    {
-                        if (j == i)
-                        {
-                            Console.BackgroundColor = ConsoleColor.White;
-                            Console.ForegroundColor = ConsoleColor.DarkBlue;
-                            Console.SetCursorPosition(x + 1, y + j - p);
-                            Console.WriteLine(list[j][0]);
-                            Console.BackgroundColor = ConsoleColor.DarkBlue;
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.SetCursorPosition(x + 14, y + j - p);
-                            Console.WriteLine(list[j][1]);
-                            Console.SetCursorPosition(x + 24, y + j - p);
-                            Console.WriteLine(list[j][2]);
-                            Console.SetCursorPosition(x + 33, y + j - p);
-                            Console.WriteLine(list[j][3]);
-                        }
-
-                        else
-                        {
-                            Console.BackgroundColor = ConsoleColor.DarkBlue;
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.SetCursorPosition(x + 1, y + j - p);
-                            Console.WriteLine(list[j][0]);
-                            Console.SetCursorPosition(x + 14, y + j - p);
-                            Console.WriteLine(list[j][1]);
-                            Console.SetCursorPosition(x + 24, y + j - p);
-                            Console.WriteLine(list[j][2]);
-                            Console.SetCursorPosition(x + 33, y + j - p);
-                            Console.WriteLine(list[j][3]);
-                        }
-
-                    }
-
-                }
-            }
-            else
-            {
-                int g = list.Count - 17;
-                x = sizeWindow + 2;
-                if (i != g)
-                {
-
-                    for (int j = list.Count - 1; j > g + 1; j--)
-                    {
-                        if (j == i)
-                        {
-                            Console.BackgroundColor = ConsoleColor.White;
-                            Console.ForegroundColor = ConsoleColor.DarkBlue;
-                            Console.SetCursorPosition(x + 1, j - g + y);
-                            Console.WriteLine(list[j][0]);
-                            Console.BackgroundColor = ConsoleColor.DarkBlue;
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.SetCursorPosition(x + 14, j - g + y);
-                            Console.WriteLine(list[j][1]);
-                            Console.SetCursorPosition(x + 24, j - g + y);
-                            Console.WriteLine(list[j][2]);
-                            Console.SetCursorPosition(x + 33, j - g + y);
-                            Console.WriteLine(list[j][3]);
-                        }
-                        else
-                        {
-                            Console.BackgroundColor = ConsoleColor.DarkBlue;
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.SetCursorPosition(x + 1, j - g + y);
-                            Console.WriteLine(list[j][0]);
-                            Console.SetCursorPosition(x + 14, j - g + y);
-                            Console.WriteLine(list[j][1]);
-                            Console.SetCursorPosition(x + 24, j - g + y);
-                            Console.WriteLine(list[j][2]);
-                            Console.SetCursorPosition(x + 33, j - g + y);
-                            Console.WriteLine(list[j][3]);
-                        }
-
-                    }
-
-                }
-
-            }
-        }
-
         public string SizeCheck(string fullName, string name)
         {
-            int txt = 0;
             string text = fullName;
-            int sizeText = fullName.Length+2;
+            int sizeText = fullName.Length + 2;
             if (sizeText > 33)
             {
                 string t = text.Remove(3);
@@ -850,10 +661,10 @@ namespace NortonCommander
                     return text = t + ".." + "\\" + name;
                 }
                 else
-                     return text = t + ".." + "\\" + name;
+                    return text = t + ".." + "\\" + name;
             }
             else
-               return text;
+                return text;
         }
 
         public void DrawWindowDisc()

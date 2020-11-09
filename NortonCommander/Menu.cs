@@ -32,36 +32,45 @@ namespace NortonCommander
             Console.CursorVisible = false;
             while (true)
             {
-                for (int i = 0; i < list.Count; i++)
+                if (pos < 17)
                 {
-                    if (i < 17)
+                    for (int i = 0; i < list.Count; i++)
                     {
-                        Console.SetCursorPosition(x + 1, y + i);
-                        if (pos == i)
+                        if (i < 17)
                         {
-                            Console.BackgroundColor = fg;
-                            Console.ForegroundColor = bg;
+                            Console.SetCursorPosition(x + 1, y + i);
+                            if (i == pos)
+                            {
+                                Console.BackgroundColor = fg;
+                                Console.ForegroundColor = bg;
+                            }
+                            else
+                            {
+                                Console.BackgroundColor = bg;
+                                Console.ForegroundColor = fg;
+                            }
+                            Console.WriteLine(list[i][0]);
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.SetCursorPosition(x + 14, y + i);
+                            Console.WriteLine(list[i][1]);
+                            Console.SetCursorPosition(x + 24, y + i);
+                            Console.WriteLine(list[i][2]);
+                            Console.SetCursorPosition(x + 33, y + i);
+                            Console.WriteLine(list[i][3]);
                         }
-                        else
-                        {
-                            Console.BackgroundColor = bg;
-                            Console.ForegroundColor = fg;
-                        }
-                        Console.WriteLine(list[i][0]);
-                        Console.BackgroundColor = ConsoleColor.DarkBlue;
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.SetCursorPosition(x + 14, y + i);
-                        Console.WriteLine(list[i][1]);
-                        Console.SetCursorPosition(x + 24, y + i);
-                        Console.WriteLine(list[i][2]);
-                        Console.SetCursorPosition(x + 33, y + i);
-                        Console.WriteLine(list[i][3]);
                     }
-                    else if (pos > 16)
+                }
+                if (pos > 16 && pos < list.Count)
+                {
+                    int k = pos - 16;
+                    int p = 0;
+                    while (k != p)
                     {
-                        for (int j = pos; j < pos + 17; j++)
+                        p = k;
+                        for (int j = p; j < pos + 1; j++)
                         {
-                            Console.SetCursorPosition(x + 1, y + j - pos);
+                            Console.SetCursorPosition(x + 1, y + j - p);
                             if (j == pos)
                             {
                                 Console.BackgroundColor = fg;
@@ -72,15 +81,15 @@ namespace NortonCommander
                                 Console.BackgroundColor = bg;
                                 Console.ForegroundColor = fg;
                             }
-                            Console.WriteLine(list[j - pos + 1][0]);
+                            Console.WriteLine(list[j][0]);
                             Console.BackgroundColor = ConsoleColor.DarkBlue;
                             Console.ForegroundColor = ConsoleColor.White;
-                            Console.SetCursorPosition(x + 14, y + j - pos);
-                            Console.WriteLine(list[j - pos + 1][1]);
-                            Console.SetCursorPosition(x + 24, y + j - pos);
-                            Console.WriteLine(list[j - pos + 1][2]);
-                            Console.SetCursorPosition(x + 33, y + j - pos);
-                            Console.WriteLine(list[j - pos + 1][3]);
+                            Console.SetCursorPosition(x + 14, y + j - p);
+                            Console.WriteLine(list[j][1]);
+                            Console.SetCursorPosition(x + 24, y + j - p);
+                            Console.WriteLine(list[j][2]);
+                            Console.SetCursorPosition(x + 33, y + j - p);
+                            Console.WriteLine(list[j][3]);
                         }
                     }
                 }
@@ -155,36 +164,11 @@ namespace NortonCommander
                         break;
 
                     case ConsoleKey.UpArrow:
-                        //if (list.Count > 16)
-                        //{
-                        //    if (pos > 0)
-                        //    {
-                        //        pos--;
-                        //        draw.WriteLongListUp(list, pos, panel);
-                        //    }
-                        //    else
-                        //        break;
-
-                        //}
-                        //else 
                         if (pos > 0)
                             pos--;
                         break;
 
                     case ConsoleKey.DownArrow:
-
-                        //if (list.Count > 16)
-                        //{
-                        //    if (pos < list.Count - 1)
-                        //    {
-                        //        pos++;
-                        //        if (pos > 16)
-                        //            draw.WriteLongListDown(list, pos, panel);
-                        //    }
-                        //    else
-                        //        break;
-                        //}
-                        //else 
                         if (pos < list.Count - 1)
                             pos++;
                         break;
@@ -199,7 +183,7 @@ namespace NortonCommander
             draw.DrawWindowDisc();
             Performance perf = new Performance();
             Console.BackgroundColor = ConsoleColor.White;
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Console.SetCursorPosition(34, 8);
             Console.WriteLine("Switch Disk");
             int x = 38;
@@ -290,11 +274,11 @@ namespace NortonCommander
                 {
 
                     case ConsoleKey.Enter:
-                      if(pos==0)
+                        if (pos == 0)
                             return "YES";
-                      else
+                        else
                             return "NO";
-                       
+
                     case ConsoleKey.Escape:
                         perf.launchPanelCommander(dirL.FullName, dirR.FullName, panel, true);
                         break;
