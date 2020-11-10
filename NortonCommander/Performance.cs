@@ -13,7 +13,7 @@ namespace NortonCommander
     {
         DrawCommander draw = new DrawCommander();
         ConvertPanels panels = new ConvertPanels();
-        string pathR = "D:\\";
+        string pathR = "C:\\";
         string pathL = "C:\\";
         string panel = "left";
         string nameR = "";
