@@ -15,7 +15,9 @@ namespace NortonCommander
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.Unicode;
-            
+            Console.WindowHeight = 25;
+            Console.WindowWidth = 81;
+
             Performance pref = new Performance();
             pref.launchPanelCommander();
 
